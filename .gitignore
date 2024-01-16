@@ -2,3 +2,4 @@ benchmark/nangate45
 input/
 output/
 .vscode/
+*.tar

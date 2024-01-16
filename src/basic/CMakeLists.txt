@@ -1,11 +1,13 @@
+# CMakeLists.txt for basic
+
 cmake_minimum_required(VERSION 3.10)
+project(basic)
 
-# set the project name
-project(BasicProject)
+# Add source files
+set(BASIC_SOURCES
+    design.cpp
+)
 
-# specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-# add the executable
-add_executable(BasicProject main.cpp)
+# Add library target
+add_library(basic ${BASIC_SOURCES})
+target_include_directories(basic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

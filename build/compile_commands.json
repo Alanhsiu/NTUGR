@@ -1,0 +1,38 @@
+[
+{
+  "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o CMakeFiles/main.dir/main.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
+  "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
+  "output": "CMakeFiles/main.dir/main.cpp.o"
+},
+{
+  "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -g -o basic/CMakeFiles/basic.dir/design.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp",
+  "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp",
+  "output": "basic/CMakeFiles/basic.dir/design.cpp.o"
+},
+{
+  "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp",
+  "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp",
+  "output": "gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o"
+},
+{
+  "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/GRNet.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp",
+  "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp",
+  "output": "gr/CMakeFiles/gr.dir/GRNet.cpp.o"
+},
+{
+  "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/MazeRoute.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp",
+  "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp",
+  "output": "gr/CMakeFiles/gr.dir/MazeRoute.cpp.o"
+},
+{
+  "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/PatternRoute.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp",
+  "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp",
+  "output": "gr/CMakeFiles/gr.dir/PatternRoute.cpp.o"
+}
+]

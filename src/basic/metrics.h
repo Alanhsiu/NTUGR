@@ -8,9 +8,9 @@ using namespace std;
 
 class Metrics {
 public:
-    int wireCost;
-    int viaCost;
-    vector<vector<int>> ofWeight; 
+    double wireCost;
+    double viaCost;
+    vector<double> OFWeight; 
     
 };
 

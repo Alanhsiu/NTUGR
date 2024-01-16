@@ -14,7 +14,9 @@ using namespace std;
 class Design {
 public:
     Design(const string& name) : name(name) {}
-
+    ~Design();
+    bool readCap(const string& filename);
+    bool readNet(const string& filename);
     string name;
     NetList netlist;
     vector<Layer> capacity;

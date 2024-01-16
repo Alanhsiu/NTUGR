@@ -10,7 +10,73 @@
 
 using namespace std;
 
-bool readNet(const string& filename, NetList& netlist) {
+Design::~Design(){
+    
+}
+
+bool Design::readCap(const string& filename){
+    ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        cerr << "Error opening the file." << endl;
+        return false;
+    }
+    string line;
+    // nLayers, xSize, ySize
+    getline(inputFile, line);
+    istringstream iss1(line);
+    iss1 >> dimension.n_layers >> dimension.x_size >> dimension.y_size;
+    // cost
+    getline(inputFile, line);
+    istringstream iss2(line);
+    iss2 >> metrics.wireCost >> metrics.viaCost;
+    int OFWeight;
+    metrics.OFWeight.resize(dimension.n_layers);
+    for(int i=0; i<dimension.n_layers; i++){
+        iss2 >> OFWeight;
+        metrics.OFWeight.emplace_back(OFWeight);
+    }
+    // x step sizes
+    dimension.hEdge.resize(dimension.x_size);
+    getline(inputFile, line);
+    istringstream iss3(line);
+    int hEdge;
+    for(int i=0; i<dimension.x_size; i++){
+        iss3 >> hEdge;
+        dimension.hEdge.emplace_back(hEdge);
+    }
+    // y step sizes
+    dimension.vEdge.resize(dimension.y_size);
+    getline(inputFile, line);
+    istringstream iss4(line);
+    int vEdge;
+    for(int i=0; i<dimension.y_size; i++){
+        iss4 >> vEdge;
+        dimension.vEdge.emplace_back(vEdge);
+    }
+
+    //capacity
+    string name;
+    for(int i=0; i<dimension.n_layers; i++){
+        Layer layer;
+        layer.id = i;
+        getline(inputFile, line);
+        istringstream iss(line);
+        iss >> name >> layer.direction >> layer.minLength;
+        vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
+        for(int i=0; i<dimension.y_size; i++){
+            getline(inputFile, line);
+            istringstream iss(line);
+            for(int j=0; j<dimension.x_size; j++){
+                iss >> cap[i][j];
+            }
+        }
+        layer.capacity = cap;
+        capacity.push_back(layer);
+    }
+    return true;
+}
+
+bool Design::readNet(const string& filename) {
     ifstream inputFile(filename);
     if (!inputFile.is_open()) {
         cerr << "Error opening the file." << endl;
@@ -54,13 +120,13 @@ bool readNet(const string& filename, NetList& netlist) {
                 iss.ignore(1, ')');
                 iss >> comma >> ws;
                 Point point(point_id++, net_id, layer, x, y);
-                cout << "point_id: " << point.id << ", x: " << point.x << ", y: " << point.y << ", layer: " << point.layer << endl;
+                // cout << "point_id: " << point.id << ", x: " << point.x << ", y: " << point.y << ", layer: " << point.layer << endl;
                 point_ids.push_back(point.id);
                 points.emplace_back(point);
             }
 
             pin.point_ids = point_ids;
-            cout << "pin_id: " << pin.id << ", pin_size: " << pin.point_ids.size() << endl;
+            // cout << "pin_id: " << pin.id << ", pin_size: " << pin.point_ids.size() << endl;
             pin_ids.push_back(pin.id);
             pins.emplace_back(pin);
         }
