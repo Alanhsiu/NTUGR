@@ -53,7 +53,7 @@ typedef struct
 // extern void readLUT();
 extern DTYPE flute_wl(int d, DTYPE x[], DTYPE y[], int acc);
 //Macro: DTYPE flutes_wl(int d, DTYPE xs[], DTYPE ys[], int s[], int acc);
-// extern Tree flute(int d, DTYPE x[], DTYPE y[], int acc);
+extern Tree flute(int d, DTYPE x[], DTYPE y[], int acc);
 //Macro: Tree flutes(int d, DTYPE xs[], DTYPE ys[], int s[], int acc);
 extern DTYPE wirelength(Tree t);
 extern void printtree(Tree t);

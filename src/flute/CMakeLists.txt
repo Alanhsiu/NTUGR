@@ -7,4 +7,6 @@ project(flute)
 file(GLOB FLUTE_SOURCES "*.c")
 
 add_library(flute ${FLUTE_SOURCES})
+message("Compiling flute sources: ${FLUTE_SOURCES}")
+
 target_include_directories(flute PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
