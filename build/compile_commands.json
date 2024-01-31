@@ -1,9 +1,9 @@
 [
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o CMakeFiles/main.dir/main.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o CMakeFiles/route.dir/main.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
-  "output": "CMakeFiles/main.dir/main.cpp.o"
+  "output": "CMakeFiles/route.dir/main.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",

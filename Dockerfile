@@ -68,6 +68,9 @@ RUN pip install \
 RUN pip install  dgl -f https://data.dgl.ai/wheels/cu117/repo.html
 RUN pip install  dglgo -f https://data.dgl.ai/wheels-test/repo.html
 
-COPY device.py /app/device.py
-WORKDIR /app
-CMD ["python", "device.py"]
+# COPY device.py /app/device.py
+
+# WORKDIR /app
+# CMD ["python", "device.py"]
+
+COPY alpha/router /workspace/router

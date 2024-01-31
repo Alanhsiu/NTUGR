@@ -1,5 +1,6 @@
+alpha/
+benchmark/
 build/
-benchmark/nangate45
 input/
 output/
 .vscode/
