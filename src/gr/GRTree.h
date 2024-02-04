@@ -4,6 +4,7 @@
 class GRPoint: public utils::PointT<int> {
 public:
     int layerIdx;
+    GRPoint(): layerIdx(0), utils::PointT<int>(0, 0) {}
     GRPoint(int l, int _x, int _y): layerIdx(l), utils::PointT<int>(_x, _y) {}
     friend inline std::ostream& operator<<(std::ostream& os, const GRPoint& pt) {
         os << "(" << pt.layerIdx << ", " << pt.x << ", " << pt.y << ")";

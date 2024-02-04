@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="C5RBs43oDa-KdzZeNtuy" name="Loader">
-        <mxGraphModel dx="664" dy="534" grid="0" gridSize="10" guides="0" tooltips="0" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="904" dy="382" grid="0" gridSize="10" guides="0" tooltips="0" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-0"/>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0"/>
@@ -97,29 +97,64 @@
             </root>
         </mxGraphModel>
     </diagram>
-    <diagram id="c9D1N9GFUz9_w7aLZmns" name="GridGraph">
-        <mxGraphModel dx="368" dy="618" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <diagram id="_CBr8Cn0QdF42obfqb1F" name="GlobalRouter">
+        <mxGraphModel dx="897" dy="610" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="xLD0_5f5G3BrGxFjgsA--3" value="GraphEdge" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
-                    <mxGeometry x="543" y="352" width="160" height="130" as="geometry">
-                        <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds"/>
+                <mxCell id="HevTYBSNyxqqAhqlRN5_-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="HevTYBSNyxqqAhqlRN5_-2" target="n66TMRuZkN7RQtcoLKmF-4" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="498" y="63" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="xLD0_5f5G3BrGxFjgsA--4" value="capacity: double&#10;demand: double&#10;getResource(): double" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="xLD0_5f5G3BrGxFjgsA--3">
-                    <mxGeometry y="26" width="160" height="104" as="geometry"/>
-                </mxCell>
-                <mxCell id="xLD0_5f5G3BrGxFjgsA--5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="xLD0_5f5G3BrGxFjgsA--9" target="xLD0_5f5G3BrGxFjgsA--3">
+                <mxCell id="WWrXClFBC-nAK5Uc78w--12" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="HevTYBSNyxqqAhqlRN5_-2" target="WWrXClFBC-nAK5Uc78w--1" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="xLD0_5f5G3BrGxFjgsA--9" value="GridGraph" style="swimlane;fontStyle=2;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
-                    <mxGeometry x="430" y="31" width="386" height="239" as="geometry">
+                <mxCell id="WWrXClFBC-nAK5Uc78w--16" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="HevTYBSNyxqqAhqlRN5_-2" target="WWrXClFBC-nAK5Uc78w--4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="HevTYBSNyxqqAhqlRN5_-2" value="GlobalRouter" style="swimlane;fontStyle=2;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="418" y="-136" width="184" height="107" as="geometry">
                         <mxRectangle x="430" y="150" width="160" height="26" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="xLD0_5f5G3BrGxFjgsA--10" value="nLayers: unsigned&#10;xSize: unsigned&#10;ySize: unsigned&#10;gridlines: vector&lt;vector&lt;DBU&gt;&gt;&#10;gridCenters: vector&lt;vector&lt;DBU&gt;&gt;&#10;layerDirections: vector&lt;unsigned&gt;&#10;layerMinLengths: vector&lt;DBU&gt;UnitLengthWireCost: double&#10;UnitViaCost: double&#10;OFWeight: vector&lt;double&gt;&#10;totalLength: DBU&#10;totalNumVias: int&#10;graphEdges: vector&lt;vector&lt;vector&lt;GraphEdge&gt;&gt;&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="xLD0_5f5G3BrGxFjgsA--9">
+                <mxCell id="HevTYBSNyxqqAhqlRN5_-3" value="parameters: const Parameters&#10;gridGraph: GridGraph&#10;nets: vector&lt;GRNet&gt; nets&#10;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="HevTYBSNyxqqAhqlRN5_-2" vertex="1">
+                    <mxGeometry y="26" width="184" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="n66TMRuZkN7RQtcoLKmF-1" value="GraphEdge" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="-37" y="388" width="160" height="130" as="geometry">
+                        <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n66TMRuZkN7RQtcoLKmF-2" value="capacity: double&#10;demand: double&#10;getResource(): double" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="n66TMRuZkN7RQtcoLKmF-1" vertex="1">
+                    <mxGeometry y="26" width="160" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="n66TMRuZkN7RQtcoLKmF-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="n66TMRuZkN7RQtcoLKmF-4" target="n66TMRuZkN7RQtcoLKmF-1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="n66TMRuZkN7RQtcoLKmF-4" value="GridGraph" style="swimlane;fontStyle=2;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="-150" y="67" width="386" height="239" as="geometry">
+                        <mxRectangle x="430" y="150" width="160" height="26" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="n66TMRuZkN7RQtcoLKmF-5" value="nLayers: unsigned&#10;xSize: unsigned&#10;ySize: unsigned&#10;gridlines: vector&lt;vector&lt;DBU&gt;&gt;&#10;gridCenters: vector&lt;vector&lt;DBU&gt;&gt;&#10;layerDirections: vector&lt;unsigned&gt;&#10;layerMinLengths: vector&lt;DBU&gt;&#10;UnitLengthWireCost: double&#10;UnitViaCost: double&#10;OFWeight: vector&lt;double&gt;&#10;totalLength: DBU&#10;totalNumVias: int&#10;graphEdges: vector&lt;vector&lt;vector&lt;GraphEdge&gt;&gt;&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="n66TMRuZkN7RQtcoLKmF-4" vertex="1">
                     <mxGeometry y="26" width="386" height="211" as="geometry"/>
+                </mxCell>
+                <mxCell id="WWrXClFBC-nAK5Uc78w--1" value="GRNet" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="368" y="67" width="284" height="130" as="geometry">
+                        <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="WWrXClFBC-nAK5Uc78w--2" value="index: int &#10;name: string&#10;pinAccessPoints: vector&lt;vector&lt;GRPoint&gt;&gt;&#10;boundingBox: utils::BoxT&lt;int&gt;&#10;routingTree: std::shared_ptr&lt;GRTreeNode&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="WWrXClFBC-nAK5Uc78w--1" vertex="1">
+                    <mxGeometry y="26" width="284" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="WWrXClFBC-nAK5Uc78w--4" value="Parameters" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="726" y="67" width="284" height="130" as="geometry">
+                        <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="WWrXClFBC-nAK5Uc78w--5" value="index: int &#10;name: string&#10;pinAccessPoints: vector&lt;vector&lt;GRPoint&gt;&gt;&#10;boundingBox: utils::BoxT&lt;int&gt;&#10;routingTree: std::shared_ptr&lt;GRTreeNode&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="WWrXClFBC-nAK5Uc78w--4" vertex="1">
+                    <mxGeometry y="26" width="284" height="104" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
