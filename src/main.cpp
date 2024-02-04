@@ -14,6 +14,8 @@ extern "C" {
 using namespace std;
 
 int main(int argc, char* argv[]){
+    cout << "GLOBAL ROUTER CUGR" << std::endl;
+
     // Parse parameters
     Parameters parameters(argc, argv);
     Design design(parameters);

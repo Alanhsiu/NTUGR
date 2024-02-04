@@ -21,7 +21,7 @@ public:
     }
     ~Design();
 
-// private:
+private:
     const Parameters& parameters;
     string name;
     NetList netlist;
