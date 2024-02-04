@@ -7,11 +7,10 @@
 using namespace std;
 
 class Metrics {
-public:
-    double wireCost;
-    double viaCost;
-    vector<double> OFWeight; 
-    
+   public:
+    double UnitLengthWireCost;
+    double UnitViaCost;
+    vector<double> OFWeight;
 };
 
-#endif // METRICS_H
+#endif  // METRICS_H

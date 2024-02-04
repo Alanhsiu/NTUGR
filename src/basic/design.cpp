@@ -1,3 +1,4 @@
+#include "../basic/design.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -5,16 +6,14 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include "../basic/design.h"
 #include "../basic/netlist.h"
 
 using namespace std;
 
-Design::~Design(){
-    
+Design::~Design() {
 }
 
-bool Design::readCap(const string& filename){
+bool Design::readCap(const string& filename) {
     ifstream inputFile(filename);
     if (!inputFile.is_open()) {
         cerr << "Error opening the file." << endl;
@@ -28,10 +27,10 @@ bool Design::readCap(const string& filename){
     // cost
     getline(inputFile, line);
     istringstream iss2(line);
-    iss2 >> metrics.wireCost >> metrics.viaCost;
+    iss2 >> metrics.UnitLengthWireCost >> metrics.UnitViaCost;
     int OFWeight;
     metrics.OFWeight.resize(dimension.n_layers);
-    for(int i=0; i<dimension.n_layers; i++){
+    for (int i = 0; i < dimension.n_layers; i++) {
         iss2 >> OFWeight;
         metrics.OFWeight.emplace_back(OFWeight);
     }
@@ -40,7 +39,7 @@ bool Design::readCap(const string& filename){
     getline(inputFile, line);
     istringstream iss3(line);
     int hEdge;
-    for(int i=0; i<dimension.x_size; i++){
+    for (int i = 0; i < dimension.x_size; i++) {
         iss3 >> hEdge;
         dimension.hEdge.emplace_back(hEdge);
     }
@@ -49,29 +48,29 @@ bool Design::readCap(const string& filename){
     getline(inputFile, line);
     istringstream iss4(line);
     int vEdge;
-    for(int i=0; i<dimension.y_size; i++){
+    for (int i = 0; i < dimension.y_size; i++) {
         iss4 >> vEdge;
         dimension.vEdge.emplace_back(vEdge);
     }
 
-    //capacity
+    // capacity
     string name;
-    for(int i=0; i<dimension.n_layers; i++){
+    for (int i = 0; i < dimension.n_layers; i++) {
         Layer layer;
         layer.id = i;
         getline(inputFile, line);
         istringstream iss(line);
         iss >> name >> layer.direction >> layer.minLength;
         vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
-        for(int i=0; i<dimension.y_size; i++){
+        for (int i = 0; i < dimension.y_size; i++) {
             getline(inputFile, line);
             istringstream iss(line);
-            for(int j=0; j<dimension.x_size; j++){
+            for (int j = 0; j < dimension.x_size; j++) {
                 iss >> cap[i][j];
             }
         }
         layer.capacity = cap;
-        capacity.push_back(layer);
+        layers.push_back(layer);
     }
     return true;
 }
@@ -143,8 +142,8 @@ bool Design::readNet(const string& filename) {
 
     return true;
 }
-
-// int main() {  // for testing
+/* netlist testing */
+// int main() {
 //     NetList netlist;
 //     readNet("/Users/alanhsiu/Desktop/Github/NTUGR/input/example.net", netlist);
 //     cout << "n_nets: " << netlist.n_nets << endl;

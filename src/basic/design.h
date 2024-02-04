@@ -6,30 +6,31 @@
 #include <vector>
 
 #include "../global.h"
-#include "netlist.h"
-#include "layer.h"
 #include "dimension.h"
+#include "layer.h"
 #include "metrics.h"
+#include "netlist.h"
 
 using namespace std;
 
 class Design {
-public:
-    Design(const Parameters& params) : parameters(params) {
+   public:
+    Design(const Parameters& params)
+        : parameters(params) {
         readCap(params.cap_file);
         readNet(params.net_file);
     }
     ~Design();
 
-private:
+    // private:
     const Parameters& parameters;
     string name;
     NetList netlist;
-    vector<Layer> capacity;
+    vector<Layer> layers;
     Dimension dimension;
     Metrics metrics;
     bool readCap(const string& filename);
     bool readNet(const string& filename);
 };
 
-#endif // DESIGN_H
+#endif  // DESIGN_H
