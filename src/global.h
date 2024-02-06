@@ -5,8 +5,7 @@ using utils::log;
 using utils::logeol;
 using utils::loghline;
 using utils::logmem;
-using std::cout;
-using std::endl;
+using namespace std;
 
 // STL libraries
 #include <iostream>
@@ -24,6 +23,10 @@ using std::endl;
 #include <fstream>
 #include <algorithm>
 #include <climits>
+#include <iomanip>
+#include <map>
+#include <queue>
+#include <typeinfo>
 
 #include "utils/robin_hood.h"
 
@@ -33,9 +36,14 @@ struct Parameters {
     std::string out_file;
     int threads = 1;
 
-    const double cost_logistic_slope = 1.0;
+    const int min_routing_layer = 0;
+    const double max_detour_ratio = 0.25;
+    const int target_detour_count = 20;
     const double via_multiplier = 2.0;
 
+    const double cost_logistic_slope = 1.0;
+    const double maze_logistic_slope = 0.5;
+    const bool write_heatmap = false;
     
     // command: /evaluator $input_path/$data.cap $input_path/$data.net $output_path/$data.PR_output
     Parameters(int argc, char* argv[]) {

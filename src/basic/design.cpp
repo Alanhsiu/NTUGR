@@ -28,14 +28,14 @@ bool Design::readCap(const string& filename) {
     getline(inputFile, line);
     istringstream iss2(line);
     iss2 >> metrics.UnitLengthWireCost >> metrics.UnitViaCost;
-    int OFWeight;
-    metrics.OFWeight.resize(dimension.n_layers);
+    double OFWeight;
+    // metrics.OFWeight.resize(dimension.n_layers);
     for (int i = 0; i < dimension.n_layers; i++) {
         iss2 >> OFWeight;
         metrics.OFWeight.emplace_back(OFWeight);
     }
     // x step sizes
-    dimension.hEdge.resize(dimension.x_size);
+    // dimension.hEdge.resize(dimension.x_size);
     getline(inputFile, line);
     istringstream iss3(line);
     int hEdge;
@@ -44,7 +44,7 @@ bool Design::readCap(const string& filename) {
         dimension.hEdge.emplace_back(hEdge);
     }
     // y step sizes
-    dimension.vEdge.resize(dimension.y_size);
+    // dimension.vEdge.resize(dimension.y_size);
     getline(inputFile, line);
     istringstream iss4(line);
     int vEdge;
@@ -61,6 +61,14 @@ bool Design::readCap(const string& filename) {
         getline(inputFile, line);
         istringstream iss(line);
         iss >> name >> layer.direction >> layer.minLength;
+        // vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
+        // for (int i = 0; i < dimension.y_size; i++) {
+        //     getline(inputFile, line);
+        //     istringstream iss(line);
+        //     for (int j = 0; j < dimension.x_size; j++) {
+        //         iss >> cap[i][j];
+        //     }
+        // }
         vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
         for (int i = 0; i < dimension.y_size; i++) {
             getline(inputFile, line);
@@ -69,6 +77,11 @@ bool Design::readCap(const string& filename) {
                 iss >> cap[i][j];
             }
         }
+        // for (int j = 0; j < dimension.x_size; j++) {
+        //         cout << cap[dimension.y_size-1][j] << " ";
+        //     }
+        //     cout <<"----" << endl;
+        // cout << "x_size: " << dimension.x_size << ", y_size: " << dimension.y_size << endl;
         layer.capacity = cap;
         layers.push_back(layer);
     }

@@ -6,7 +6,9 @@ project(gr)
 # Add source files
 set(GR_SOURCES
     GlobalRouter.cpp
+    GridGraph.cpp
     GRNet.cpp
+    GRTree.cpp
     MazeRoute.cpp
     PatternRoute.cpp
 )

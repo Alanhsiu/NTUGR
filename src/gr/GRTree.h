@@ -10,6 +10,7 @@ public:
         os << "(" << pt.layerIdx << ", " << pt.x << ", " << pt.y << ")";
         return os;
     }
+    
 };
 
 class GRTreeNode: public GRPoint {

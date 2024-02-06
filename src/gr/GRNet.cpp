@@ -3,17 +3,21 @@
 GRNet::GRNet(const Net& baseNet, const Design& design, const GridGraph& gridGraph): index(baseNet.id), name(baseNet.name) {
     pinAccessPoints.resize(baseNet.pin_ids.size());
     
-    // TODO: construct pinAccessPoints
+    // construct pinAccessPoints
     for (int i = 0; i < baseNet.pin_ids.size(); i++) { // i is pinIndex
         const Pin& pin = design.netlist.pins[baseNet.pin_ids[i]];
         pinAccessPoints[i].resize(pin.point_ids.size());
         for (int j = 0; j < pin.point_ids.size(); j++) { // j is accessPointIndex
             const Point& point = design.netlist.points[pin.point_ids[j]];
-            pinAccessPoints[i][j] = GRPoint(point.layer, point.x, point.y);
+
+            // pinAccessPoints[i][j] = GRPoint(point.layer, point.x, point.y);
+            int x = gridGraph.searchXGridline(point.x);
+            int y = gridGraph.searchYGridline(point.y);
+            pinAccessPoints[i][j] = GRPoint(point.layer, x, y);
         }
     }
 
-    // TODO: construct boundingBox
+    // construct boundingBox
     boundingBox = utils::BoxT<int>(INT_MAX, INT_MAX, INT_MIN, INT_MIN);
     for (const auto& pinPoints: pinAccessPoints) {
         for (const auto& point: pinPoints) {

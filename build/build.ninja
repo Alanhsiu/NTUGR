@@ -11,8 +11,8 @@
 # =============================================================================
 
 # =============================================================================
-# Project: main
-# Configurations: Debug
+# Project: NTUGR
+# Configurations: Release
 # =============================================================================
 
 #############################################
@@ -24,7 +24,7 @@ ninja_required_version = 1.5
 #############################################
 # Set configuration variable for custom commands.
 
-CONFIGURATION = Debug
+CONFIGURATION = Release
 # =============================================================================
 # Include auxiliary files.
 
@@ -49,9 +49,9 @@ cmake_ninja_workdir = /home/b09901066/ISPD-NTUEE/NTUGR/build/
 
 build cmake_object_order_depends_target_route: phony || cmake_object_order_depends_target_basic cmake_object_order_depends_target_flute cmake_object_order_depends_target_gr
 
-build CMakeFiles/route.dir/main.cpp.o: CXX_COMPILER__route_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp || cmake_object_order_depends_target_route
+build CMakeFiles/route.dir/main.cpp.o: CXX_COMPILER__route_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp || cmake_object_order_depends_target_route
   DEP_FILE = CMakeFiles/route.dir/main.cpp.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = CMakeFiles/route.dir
   OBJECT_FILE_DIR = CMakeFiles/route.dir
@@ -64,8 +64,8 @@ build CMakeFiles/route.dir/main.cpp.o: CXX_COMPILER__route_unscanned_Debug /home
 #############################################
 # Link the executable route
 
-build route: CXX_EXECUTABLE_LINKER__route_Debug CMakeFiles/route.dir/main.cpp.o | basic/libbasic.a gr/libgr.a flute/libflute.a || basic/libbasic.a flute/libflute.a gr/libgr.a
-  FLAGS = -g
+build route: CXX_EXECUTABLE_LINKER__route_Release CMakeFiles/route.dir/main.cpp.o | basic/libbasic.a gr/libgr.a flute/libflute.a || basic/libbasic.a flute/libflute.a gr/libgr.a
+  FLAGS = -O3 -DNDEBUG
   LINK_LIBRARIES = basic/libbasic.a  gr/libgr.a  -lstdc++fs  flute/libflute.a
   OBJECT_DIR = CMakeFiles/route.dir
   POST_BUILD = :
@@ -110,9 +110,9 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_basic: phony || basic/CMakeFiles/basic.dir
 
-build basic/CMakeFiles/basic.dir/design.cpp.o: CXX_COMPILER__basic_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp || cmake_object_order_depends_target_basic
+build basic/CMakeFiles/basic.dir/design.cpp.o: CXX_COMPILER__basic_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp || cmake_object_order_depends_target_basic
   DEP_FILE = basic/CMakeFiles/basic.dir/design.cpp.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic
   OBJECT_DIR = basic/CMakeFiles/basic.dir
   OBJECT_FILE_DIR = basic/CMakeFiles/basic.dir
@@ -125,8 +125,8 @@ build basic/CMakeFiles/basic.dir/design.cpp.o: CXX_COMPILER__basic_unscanned_Deb
 #############################################
 # Link the static library basic/libbasic.a
 
-build basic/libbasic.a: CXX_STATIC_LIBRARY_LINKER__basic_Debug basic/CMakeFiles/basic.dir/design.cpp.o
-  LANGUAGE_COMPILE_FLAGS = -g
+build basic/libbasic.a: CXX_STATIC_LIBRARY_LINKER__basic_Release basic/CMakeFiles/basic.dir/design.cpp.o
+  LANGUAGE_COMPILE_FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = basic/CMakeFiles/basic.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -170,30 +170,44 @@ build basic/rebuild_cache: phony basic/CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_gr: phony || gr/CMakeFiles/gr.dir
 
-build gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o: CXX_COMPILER__gr_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp || cmake_object_order_depends_target_gr
+build gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o: CXX_COMPILER__gr_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp || cmake_object_order_depends_target_gr
   DEP_FILE = gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr
   OBJECT_DIR = gr/CMakeFiles/gr.dir
   OBJECT_FILE_DIR = gr/CMakeFiles/gr.dir
 
-build gr/CMakeFiles/gr.dir/GRNet.cpp.o: CXX_COMPILER__gr_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp || cmake_object_order_depends_target_gr
+build gr/CMakeFiles/gr.dir/GridGraph.cpp.o: CXX_COMPILER__gr_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GridGraph.cpp || cmake_object_order_depends_target_gr
+  DEP_FILE = gr/CMakeFiles/gr.dir/GridGraph.cpp.o.d
+  FLAGS = -O3 -DNDEBUG
+  INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr
+  OBJECT_DIR = gr/CMakeFiles/gr.dir
+  OBJECT_FILE_DIR = gr/CMakeFiles/gr.dir
+
+build gr/CMakeFiles/gr.dir/GRNet.cpp.o: CXX_COMPILER__gr_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp || cmake_object_order_depends_target_gr
   DEP_FILE = gr/CMakeFiles/gr.dir/GRNet.cpp.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr
   OBJECT_DIR = gr/CMakeFiles/gr.dir
   OBJECT_FILE_DIR = gr/CMakeFiles/gr.dir
 
-build gr/CMakeFiles/gr.dir/MazeRoute.cpp.o: CXX_COMPILER__gr_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp || cmake_object_order_depends_target_gr
+build gr/CMakeFiles/gr.dir/GRTree.cpp.o: CXX_COMPILER__gr_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRTree.cpp || cmake_object_order_depends_target_gr
+  DEP_FILE = gr/CMakeFiles/gr.dir/GRTree.cpp.o.d
+  FLAGS = -O3 -DNDEBUG
+  INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr
+  OBJECT_DIR = gr/CMakeFiles/gr.dir
+  OBJECT_FILE_DIR = gr/CMakeFiles/gr.dir
+
+build gr/CMakeFiles/gr.dir/MazeRoute.cpp.o: CXX_COMPILER__gr_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp || cmake_object_order_depends_target_gr
   DEP_FILE = gr/CMakeFiles/gr.dir/MazeRoute.cpp.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr
   OBJECT_DIR = gr/CMakeFiles/gr.dir
   OBJECT_FILE_DIR = gr/CMakeFiles/gr.dir
 
-build gr/CMakeFiles/gr.dir/PatternRoute.cpp.o: CXX_COMPILER__gr_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp || cmake_object_order_depends_target_gr
+build gr/CMakeFiles/gr.dir/PatternRoute.cpp.o: CXX_COMPILER__gr_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp || cmake_object_order_depends_target_gr
   DEP_FILE = gr/CMakeFiles/gr.dir/PatternRoute.cpp.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr
   OBJECT_DIR = gr/CMakeFiles/gr.dir
   OBJECT_FILE_DIR = gr/CMakeFiles/gr.dir
@@ -206,8 +220,8 @@ build gr/CMakeFiles/gr.dir/PatternRoute.cpp.o: CXX_COMPILER__gr_unscanned_Debug 
 #############################################
 # Link the static library gr/libgr.a
 
-build gr/libgr.a: CXX_STATIC_LIBRARY_LINKER__gr_Debug gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o gr/CMakeFiles/gr.dir/GRNet.cpp.o gr/CMakeFiles/gr.dir/MazeRoute.cpp.o gr/CMakeFiles/gr.dir/PatternRoute.cpp.o
-  LANGUAGE_COMPILE_FLAGS = -g
+build gr/libgr.a: CXX_STATIC_LIBRARY_LINKER__gr_Release gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o gr/CMakeFiles/gr.dir/GridGraph.cpp.o gr/CMakeFiles/gr.dir/GRNet.cpp.o gr/CMakeFiles/gr.dir/GRTree.cpp.o gr/CMakeFiles/gr.dir/MazeRoute.cpp.o gr/CMakeFiles/gr.dir/PatternRoute.cpp.o
+  LANGUAGE_COMPILE_FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = gr/CMakeFiles/gr.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -251,65 +265,65 @@ build gr/rebuild_cache: phony gr/CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_flute: phony || flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/dist.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dist.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/dist.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dist.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/dist.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/dl.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dl.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/dl.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dl.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/dl.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/err.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/err.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/err.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/err.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/err.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/flute.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/flute.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/flute.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/flute_mst.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute_mst.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/flute_mst.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute_mst.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/flute_mst.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/heap.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/heap.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/heap.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/heap.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/heap.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/memAlloc.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/memAlloc.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/memAlloc.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/memAlloc.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/memAlloc.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/mst2.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/mst2.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/mst2.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/mst2.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/mst2.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
 
-build flute/CMakeFiles/flute.dir/neighbors.c.o: C_COMPILER__flute_unscanned_Debug /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/neighbors.c || cmake_object_order_depends_target_flute
+build flute/CMakeFiles/flute.dir/neighbors.c.o: C_COMPILER__flute_unscanned_Release /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/neighbors.c || cmake_object_order_depends_target_flute
   DEP_FILE = flute/CMakeFiles/flute.dir/neighbors.c.o.d
-  FLAGS = -g
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   OBJECT_FILE_DIR = flute/CMakeFiles/flute.dir
@@ -322,8 +336,8 @@ build flute/CMakeFiles/flute.dir/neighbors.c.o: C_COMPILER__flute_unscanned_Debu
 #############################################
 # Link the static library flute/libflute.a
 
-build flute/libflute.a: C_STATIC_LIBRARY_LINKER__flute_Debug flute/CMakeFiles/flute.dir/dist.c.o flute/CMakeFiles/flute.dir/dl.c.o flute/CMakeFiles/flute.dir/err.c.o flute/CMakeFiles/flute.dir/flute.c.o flute/CMakeFiles/flute.dir/flute_mst.c.o flute/CMakeFiles/flute.dir/heap.c.o flute/CMakeFiles/flute.dir/memAlloc.c.o flute/CMakeFiles/flute.dir/mst2.c.o flute/CMakeFiles/flute.dir/neighbors.c.o
-  LANGUAGE_COMPILE_FLAGS = -g
+build flute/libflute.a: C_STATIC_LIBRARY_LINKER__flute_Release flute/CMakeFiles/flute.dir/dist.c.o flute/CMakeFiles/flute.dir/dl.c.o flute/CMakeFiles/flute.dir/err.c.o flute/CMakeFiles/flute.dir/flute.c.o flute/CMakeFiles/flute.dir/flute_mst.c.o flute/CMakeFiles/flute.dir/heap.c.o flute/CMakeFiles/flute.dir/memAlloc.c.o flute/CMakeFiles/flute.dir/mst2.c.o flute/CMakeFiles/flute.dir/neighbors.c.o
+  LANGUAGE_COMPILE_FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = flute/CMakeFiles/flute.dir
   POST_BUILD = :
   PRE_LINK = :

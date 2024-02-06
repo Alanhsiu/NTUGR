@@ -4,13 +4,14 @@
 #include "GRTree.h"
 
 class GRNet;
+template <typename Type> class GridGraphView;
 
 struct GraphEdge {
     GraphEdge(): capacity(0), demand(0) {}
 
-    double capacity;
-    double demand;
-    double getResource() const { return capacity - demand; }
+    CapacityT capacity;
+    CapacityT demand;
+    CapacityT getResource() const { return capacity - demand; }
 };
 
 class GridGraph {
@@ -32,9 +33,9 @@ public:
 
     // Costs
     DBU getEdgeLength(unsigned direction, unsigned edgeIndex) const;
-    double getWireCost(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v) const;
-    double getViaCost(const int layerIndex, const utils::PointT<int> loc) const;
-    inline double getUnitViaCost() const { return UnitViaCost; }
+    CostT getWireCost(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v) const;
+    CostT getViaCost(const int layerIndex, const utils::PointT<int> loc) const;
+    inline CostT getUnitViaCost() const { return UnitViaCost; }
     
     // Misc
     void selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_t, std::pair<utils::PointT<int>, utils::IntervalT<int>>>& selectedAccessPoints) const;
@@ -48,7 +49,15 @@ public:
     int checkOverflow(const std::shared_ptr<GRTreeNode>& tree) const; // Check routing tree overflow (Only wires are checked)
     std::string getPythonString(const std::shared_ptr<GRTreeNode>& routingTree) const;
    
+    // 2D maps
+    void extractBlockageView(GridGraphView<bool>& view) const;
+    void extractCongestionView(GridGraphView<bool>& view) const; // 2D overflow look-up table
+    void extractWireCostView(GridGraphView<CostT>& view) const;
+    void updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<GRTreeNode> routingTree) const;
 
+    // For visualization
+    void write(const std::string heatmap_file="heatmap.txt") const;
+    
 // private:
     const Parameters& parameters;
 
@@ -60,9 +69,10 @@ public:
     vector<unsigned> layerDirections;
     vector<DBU> layerMinLengths;
 
-    double UnitLengthWireCost;
-    double UnitViaCost;
-    vector<double> OFWeight; // overflow weights
+    // Unit costs
+    CostT UnitLengthWireCost;
+    CostT UnitViaCost;
+    vector<CostT> OFWeight; // overflow weights
 
     DBU totalLength = 0;
     int totalNumVias = 0;
@@ -71,15 +81,55 @@ public:
     utils::IntervalT<int> rangeSearchGridlines(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const; // Find the gridlines within [locInterval.low, locInterval.high]
     utils::IntervalT<int> rangeSearchRows(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const; // Find the rows/columns overlapping with [locInterval.low, locInterval.high]
     
-    inline double getUnitLengthWireCost() const { return UnitLengthWireCost; }
-    double getWireCost(const int layerIndex, const utils::PointT<int> lower, const double demand = 1.0) const;
+    // Add by Alan
+    int searchXGridline(const int x) const;
+    int searchYGridline(const int y) const;
 
-    inline double logistic(const double& input, const double slope) const;
+    inline CostT getUnitLengthWireCost() const { return UnitLengthWireCost; }
+
+    inline double logistic(const CapacityT& input, const double slope) const;
+    CostT getWireCost(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand = 1.0) const;
 
     // Methods for updating demands 
-    void commit(const int layerIndex, const utils::PointT<int> lower, const double demand);
+    void commit(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand);
     void commitWire(const int layerIndex, const utils::PointT<int> lower, const bool reverse = false);
     void commitVia(const int layerIndex, const utils::PointT<int> loc, const bool reverse = false);
-
 };
 
+
+template <typename Type>
+class GridGraphView: public vector<vector<vector<Type>>> {
+public:
+    bool check(const utils::PointT<int>& u, const utils::PointT<int>& v) const {
+        assert(u.x == v.x || u.y == v.y);
+        if (u.y == v.y) {
+            int l = min(u.x, v.x), h = max(u.x, v.x);
+            for (int x = l; x < h; x++) {
+                if ((*this)[0][x][u.y]) return true;
+            }
+        } else {
+            int l = min(u.y, v.y), h = max(u.y, v.y);
+            for (int y = l; y < h; y++) {
+                if ((*this)[1][u.x][y]) return true;
+            }
+        }
+        return false;
+    }
+    
+    Type sum(const utils::PointT<int>& u, const utils::PointT<int>& v) const {
+        assert(u.x == v.x || u.y == v.y);
+        Type res = 0;
+        if (u.y == v.y) {
+            int l = min(u.x, v.x), h = max(u.x, v.x);
+            for (int x = l; x < h; x++) {
+                res += (*this)[0][x][u.y];
+            }
+        } else {
+            int l = min(u.y, v.y), h = max(u.y, v.y);
+            for (int y = l; y < h; y++) {
+                res += (*this)[1][u.x][y];
+            }
+        }
+        return res;
+    }
+};

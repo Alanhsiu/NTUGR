@@ -1,6 +1,6 @@
 data_list=("ariane133_51")
-input_path="/home/scratch.rliang_hardware/ISPD24_benchmark/nangate45/log"
-output_path="/home/scratch.rliang_hardware/ISPD24_benchmark/nangate45/log"
+input_path="/home/b09901066/ISPD-NTUEE/NTUGR/input"
+output_path="/home/b09901066/ISPD-NTUEE/NTUGR/output"
 for data in "${data_list[@]}"
 do
     # run the whole framework

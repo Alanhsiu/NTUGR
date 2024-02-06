@@ -17,6 +17,7 @@ public:
     void setRoutingTree(std::shared_ptr<GRTreeNode> tree) { routingTree = tree; }
     void clearRoutingTree() { routingTree = nullptr; }
     
+    
     int index;
     std::string name;
     vector<vector<GRPoint>> pinAccessPoints; // pinAccessPoints[pinIndex][accessPointIndex]

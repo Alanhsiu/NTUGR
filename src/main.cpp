@@ -1,11 +1,8 @@
 #include <iostream>
 #include <experimental/filesystem>
 #include "global.h"
-#include "design.h"
-#include "dimension.h"
-#include "layer.h"
-#include "metrics.h"
-#include "netlist.h"
+#include "../basic/design.h"
+#include "../gr/GlobalRouter.h"
 
 extern "C" {
     #include "flute/flute.h"
@@ -20,6 +17,13 @@ int main(int argc, char* argv[]){
     Parameters parameters(argc, argv);
     Design design(parameters);
     cout << "read netlist and capacity done!" << endl;
+
+    // Global router
+    GlobalRouter globalRouter(design, parameters);
+    globalRouter.route();
+    globalRouter.write();
+
+    cout << "GLOBAL ROUTER CUGR DONE" << std::endl;
 
     return 0;
 }
