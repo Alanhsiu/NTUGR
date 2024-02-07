@@ -250,6 +250,13 @@ void GlobalRouter::write(std::string guide_file) {
                << gridGraph.getGridline(1, guide.second.y.high) << " "
                << guide.first << endl;
 
+            // ss << gridGraph.searchXGridline(gridGraph.getGridline(0, guide.second.x.low)) << " "
+            //    << gridGraph.searchYGridline(gridGraph.getGridline(1, guide.second.y.low)) << " "
+            //    << guide.first << " "
+            //    << gridGraph.searchXGridline(gridGraph.getGridline(0, guide.second.x.high)) << " "
+            //    << gridGraph.searchYGridline(gridGraph.getGridline(1, guide.second.y.high)) << " "
+            //    << guide.first << endl;
+
             // Store vertical guides to add vias later
             if (guide.second.x.low == guide.second.x.high && guide.second.y.low == guide.second.y.high) {
                 auto key = std::make_pair(guide.second.x.low, guide.second.y.low);
@@ -268,6 +275,13 @@ void GlobalRouter::write(std::string guide_file) {
                     << gridGraph.getGridline(0, pair.first.first) << " "
                     << gridGraph.getGridline(1, pair.first.second) << " "
                     << z + 1 << endl;
+
+                // ss << gridGraph.searchXGridline(gridGraph.getGridline(0, pair.first.first)) << " "
+                //    << gridGraph.searchYGridline(gridGraph.getGridline(1, pair.first.second)) << " "
+                //    << z << " "
+                //    << gridGraph.searchXGridline(gridGraph.getGridline(0, pair.first.first)) << " "
+                //    << gridGraph.searchYGridline(gridGraph.getGridline(1, pair.first.second)) << " "
+                //    << z + 1 << endl;
             }
         }
         ss << ")" << endl;

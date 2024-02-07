@@ -3,24 +3,42 @@
 # Specify the minimum version for CMake
 cmake_minimum_required(VERSION 3.10)
 
-# Message
-message(STATUS "Global Router CUGR 2.0")
-message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
-message(STATUS ${PROJECT_SOURCE_DIR})
-
 # Project's name
 project(NTUGR)
+
+# Set the default build type if not specified
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+endif()
+
+# Message
+message(STATUS "Global Router CUGR 2.0")
+message(STATUS "Current source directory: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "Project source directory: ${PROJECT_SOURCE_DIR}")
 
 # Add source files
 set(MAIN_SOURCES
     main.cpp
 )
 
-add_subdirectory(basic)  # Make sure this line is before add_executable(main ...)
-add_subdirectory(gr)  # Add this line to include gr directory
-add_subdirectory(flute)  # Add this line to include flute directory
+# Add subdirectories for modular organization
+add_subdirectory(basic)
+add_subdirectory(gr)
+add_subdirectory(flute)
 
-
+# Create the executable
 add_executable(route ${MAIN_SOURCES})
-target_include_directories(route PRIVATE basic gr flute)  # Add flute to the include directories
-target_link_libraries(route PRIVATE basic gr stdc++fs flute)  # Add flute to the linked libraries
+
+# Specify include directories
+target_include_directories(route PRIVATE basic gr flute)
+
+# Link libraries
+target_link_libraries(route PRIVATE basic gr stdc++fs flute)
+
+# Set the C++ standard
+set_property(TARGET route PROPERTY CXX_STANDARD 17)
+
+# Include debug symbols in the Debug build
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  target_compile_options(route PRIVATE -g)
+endif()

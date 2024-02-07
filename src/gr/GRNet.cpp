@@ -10,10 +10,10 @@ GRNet::GRNet(const Net& baseNet, const Design& design, const GridGraph& gridGrap
         for (int j = 0; j < pin.point_ids.size(); j++) { // j is accessPointIndex
             const Point& point = design.netlist.points[pin.point_ids[j]];
 
-            // pinAccessPoints[i][j] = GRPoint(point.layer, point.x, point.y);
-            int x = gridGraph.searchXGridline(point.x);
-            int y = gridGraph.searchYGridline(point.y);
-            pinAccessPoints[i][j] = GRPoint(point.layer, x, y);
+            pinAccessPoints[i][j] = GRPoint(point.layer, point.x, point.y);
+            // int x = gridGraph.searchXGridline(point.x);
+            // int y = gridGraph.searchYGridline(point.y);
+            // pinAccessPoints[i][j] = GRPoint(point.layer, x, y);
         }
     }
 

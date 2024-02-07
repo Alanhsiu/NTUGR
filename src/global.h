@@ -36,7 +36,7 @@ struct Parameters {
     std::string out_file;
     int threads = 1;
 
-    const int min_routing_layer = 0;
+    const int min_routing_layer = 1;
     const double max_detour_ratio = 0.25;
     const int target_detour_count = 20;
     const double via_multiplier = 2.0;

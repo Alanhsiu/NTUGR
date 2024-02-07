@@ -1,103 +1,103 @@
 [
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o CMakeFiles/route.dir/main.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -std=gnu++17 -g -o CMakeFiles/route.dir/main.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/main.cpp",
   "output": "CMakeFiles/route.dir/main.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -O3 -DNDEBUG -o basic/CMakeFiles/basic.dir/design.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/basic -g -o basic/CMakeFiles/basic.dir/design.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/basic/design.cpp",
   "output": "basic/CMakeFiles/basic.dir/design.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -O3 -DNDEBUG -o gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GlobalRouter.cpp",
   "output": "gr/CMakeFiles/gr.dir/GlobalRouter.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -O3 -DNDEBUG -o gr/CMakeFiles/gr.dir/GridGraph.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GridGraph.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/GridGraph.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GridGraph.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GridGraph.cpp",
   "output": "gr/CMakeFiles/gr.dir/GridGraph.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -O3 -DNDEBUG -o gr/CMakeFiles/gr.dir/GRNet.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/GRNet.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRNet.cpp",
   "output": "gr/CMakeFiles/gr.dir/GRNet.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -O3 -DNDEBUG -o gr/CMakeFiles/gr.dir/GRTree.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRTree.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/GRTree.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRTree.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/GRTree.cpp",
   "output": "gr/CMakeFiles/gr.dir/GRTree.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -O3 -DNDEBUG -o gr/CMakeFiles/gr.dir/MazeRoute.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/MazeRoute.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/MazeRoute.cpp",
   "output": "gr/CMakeFiles/gr.dir/MazeRoute.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -O3 -DNDEBUG -o gr/CMakeFiles/gr.dir/PatternRoute.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp",
+  "command": "/usr/bin/g++ -I/home/b09901066/ISPD-NTUEE/NTUGR/src/gr -g -o gr/CMakeFiles/gr.dir/PatternRoute.cpp.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/gr/PatternRoute.cpp",
   "output": "gr/CMakeFiles/gr.dir/PatternRoute.cpp.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/dist.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dist.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/dist.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dist.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dist.c",
   "output": "flute/CMakeFiles/flute.dir/dist.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/dl.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dl.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/dl.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dl.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/dl.c",
   "output": "flute/CMakeFiles/flute.dir/dl.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/err.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/err.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/err.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/err.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/err.c",
   "output": "flute/CMakeFiles/flute.dir/err.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/flute.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/flute.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute.c",
   "output": "flute/CMakeFiles/flute.dir/flute.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/flute_mst.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute_mst.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/flute_mst.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute_mst.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/flute_mst.c",
   "output": "flute/CMakeFiles/flute.dir/flute_mst.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/heap.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/heap.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/heap.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/heap.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/heap.c",
   "output": "flute/CMakeFiles/flute.dir/heap.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/memAlloc.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/memAlloc.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/memAlloc.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/memAlloc.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/memAlloc.c",
   "output": "flute/CMakeFiles/flute.dir/memAlloc.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/mst2.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/mst2.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/mst2.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/mst2.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/mst2.c",
   "output": "flute/CMakeFiles/flute.dir/mst2.c.o"
 },
 {
   "directory": "/home/b09901066/ISPD-NTUEE/NTUGR/build",
-  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -O3 -DNDEBUG -o flute/CMakeFiles/flute.dir/neighbors.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/neighbors.c",
+  "command": "/usr/bin/gcc -I/home/b09901066/ISPD-NTUEE/NTUGR/src/flute -g -o flute/CMakeFiles/flute.dir/neighbors.c.o -c /home/b09901066/ISPD-NTUEE/NTUGR/src/flute/neighbors.c",
   "file": "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/neighbors.c",
   "output": "flute/CMakeFiles/flute.dir/neighbors.c.o"
 }

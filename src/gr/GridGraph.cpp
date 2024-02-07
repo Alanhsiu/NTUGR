@@ -44,7 +44,7 @@ GridGraph::GridGraph(const Design& design, const Parameters& params)
     for (unsigned l = 0; l < nLayers; l++) {
         for (unsigned x = 0; x < xSize; x++) {
             for (unsigned y = 0; y < ySize; y++) {
-                graphEdges[l][x][y].capacity = design.layers[l].capacity[x][y];
+                graphEdges[l][x][y].capacity = design.layers[l].capacity[y][x]; // Note capacity is stored in reverse order
             }
         }
     }
