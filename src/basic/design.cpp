@@ -39,7 +39,7 @@ bool Design::readCap(const string& filename) {
     getline(inputFile, line);
     istringstream iss3(line);
     int hEdge;
-    for (int i = 0; i < dimension.x_size; i++) {
+    for (int i = 0; i < dimension.x_size-1; i++) {
         iss3 >> hEdge;
         dimension.hEdge.emplace_back(hEdge);
     }
@@ -48,7 +48,7 @@ bool Design::readCap(const string& filename) {
     getline(inputFile, line);
     istringstream iss4(line);
     int vEdge;
-    for (int i = 0; i < dimension.y_size; i++) {
+    for (int i = 0; i < dimension.y_size-1; i++) {
         iss4 >> vEdge;
         dimension.vEdge.emplace_back(vEdge);
     }

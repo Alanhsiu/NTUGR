@@ -26,9 +26,9 @@ public:
         return ((uint64_t)point.layerIdx * xSize + point.x) * ySize + point.y;
     };
     inline uint64_t hashCell(const int x, const int y) const { return (uint64_t)x * ySize + y; }
-    inline DBU getGridline(const unsigned dimension, const int index) const { return gridlines[dimension][index]; }
-    utils::BoxT<DBU> getCellBox(utils::PointT<int> point) const;
-    utils::BoxT<int> rangeSearchCells(const utils::BoxT<DBU>& box) const;
+    // inline DBU getGridline(const unsigned dimension, const int index) const { return gridlines[dimension][index]; }
+    // utils::BoxT<DBU> getCellBox(utils::PointT<int> point) const;
+    // utils::BoxT<int> rangeSearchCells(const utils::BoxT<DBU>& box) const;
     inline GraphEdge getEdge(const int layerIndex, const int x, const int y) const {return graphEdges[layerIndex][x][y]; }
 
     // Costs
@@ -64,7 +64,7 @@ public:
     unsigned nLayers;
     unsigned xSize;
     unsigned ySize;
-    vector<vector<DBU>> gridlines;
+    // vector<vector<DBU>> gridlines;
     vector<vector<DBU>> gridCenters;
     vector<unsigned> layerDirections;
     vector<DBU> layerMinLengths;
@@ -78,12 +78,12 @@ public:
     int totalNumVias = 0;
     vector<vector<vector<GraphEdge>>> graphEdges; // gridEdges[l][x][y] stores the edge {(l, x, y), (l, x+1, y)} or {(l, x, y), (l, x, y+1)}, depending on the routing direction of the layer
 
-    utils::IntervalT<int> rangeSearchGridlines(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const; // Find the gridlines within [locInterval.low, locInterval.high]
-    utils::IntervalT<int> rangeSearchRows(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const; // Find the rows/columns overlapping with [locInterval.low, locInterval.high]
+    // utils::IntervalT<int> rangeSearchGridlines(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const; // Find the gridlines within [locInterval.low, locInterval.high]
+    // utils::IntervalT<int> rangeSearchRows(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const; // Find the rows/columns overlapping with [locInterval.low, locInterval.high]
     
     // Add by Alan
-    int searchXGridline(const int x) const;
-    int searchYGridline(const int y) const;
+    // int searchXGridline(const int x) const;
+    // int searchYGridline(const int y) const;
 
     inline CostT getUnitLengthWireCost() const { return UnitLengthWireCost; }
 
@@ -94,6 +94,10 @@ public:
     void commit(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand);
     void commitWire(const int layerIndex, const utils::PointT<int> lower, const bool reverse = false);
     void commitVia(const int layerIndex, const utils::PointT<int> loc, const bool reverse = false);
+
+    // for getEdgeLength()
+    vector<int> hEdge;
+    vector<int> vEdge;
 };
 
 

@@ -19,10 +19,10 @@ for line in lines:
     z = [line[2], line[5]]
     ax.plot(x, y, z)
 
-# Setting labels
-ax.set_xlabel('X axis')
-ax.set_ylabel('Y axis')
-ax.set_zlabel('Z axis')
+# Setting labels to display only integers on the axes
+ax.set_xticks(range(int(min(x)), int(max(x))+1))
+ax.set_yticks(range(int(min(y)), int(max(y))+1))
+ax.set_zticks(range(int(min(z)), int(max(z))+1))
 
 plt.title("3D Visualization of Lines")
 plt.savefig('3d_visualization.png')  # Save the 3D visualization as an image

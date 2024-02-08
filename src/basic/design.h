@@ -24,7 +24,7 @@ class Design {
 
     // private:
     const Parameters& parameters;
-    string name;
+    // string name;
     NetList netlist;
     vector<Layer> layers;
     Dimension dimension;

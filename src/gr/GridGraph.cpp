@@ -7,23 +7,31 @@ GridGraph::GridGraph(const Design& design, const Parameters& params)
     xSize = design.dimension.x_size;
     ySize = design.dimension.y_size;
 
-    // initialize gridlines using hEdge and vEdge
-    gridlines.resize(2);
-    gridlines[0].resize(xSize + 1);
-    gridlines[1].resize(ySize + 1);
-    gridlines[0][0] = 0;
-    gridlines[1][0] = 0;
-    for (unsigned i = 1; i <= xSize; i++)
-        gridlines[0][i] = gridlines[0][i - 1] + design.dimension.hEdge[i - 1];
-    for (unsigned i = 1; i <= ySize; i++)
-        gridlines[1][i] = gridlines[1][i - 1] + design.dimension.vEdge[i - 1];
+    hEdge = design.dimension.hEdge;
+    vEdge = design.dimension.vEdge; // for getEdgeLength()
 
-    // initialize gridCenters using gridlines
+    // initialize gridlines using hEdge and vEdge
+    // gridlines.resize(2);
+    // gridlines[0].resize(xSize + 1);
+    // gridlines[1].resize(ySize + 1);
+    // gridlines[0][0] = 0;
+    // gridlines[1][0] = 0;
+    // for (unsigned i = 1; i <= xSize; i++)
+    //     gridlines[0][i] = gridlines[0][i - 1] + design.dimension.hEdge[i - 1];
+    // for (unsigned i = 1; i <= ySize; i++)
+    //     gridlines[1][i] = gridlines[1][i - 1] + design.dimension.vEdge[i - 1];
+
+    // initialize gridCenters hEdge and vEdge
     gridCenters.resize(2);
-    for (unsigned i = 0; i < 2; i++) {
-        gridCenters[i].resize(gridlines[i].size() - 1);
-        for (unsigned j = 0; j < gridCenters[i].size(); j++)
-            gridCenters[i][j] = (gridlines[i][j] + gridlines[i][j + 1]) / 2;
+    gridCenters[0].resize(xSize);
+    gridCenters[1].resize(ySize);
+    gridCenters[0][0] = 0;
+    gridCenters[1][0] = 0;
+    for (unsigned i=1; i<xSize; i++) { // accumulate 
+        gridCenters[0][i] = gridCenters[0][i-1] + design.dimension.hEdge[i-1];
+    }
+    for (unsigned i=1; i<ySize; i++) { // accumulate 
+        gridCenters[1][i] = gridCenters[1][i-1] + design.dimension.vEdge[i-1];
     }
 
     // initialize layerDirections and layerMinLengths
@@ -50,73 +58,75 @@ GridGraph::GridGraph(const Design& design, const Parameters& params)
     }
 }
 
-utils::IntervalT<int> GridGraph::rangeSearchGridlines(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const {
-    utils::IntervalT<int> range;
-    range.low = lower_bound(gridlines[dimension].begin(), gridlines[dimension].end(), locInterval.low) - gridlines[dimension].begin();
-    range.high = lower_bound(gridlines[dimension].begin(), gridlines[dimension].end(), locInterval.high) - gridlines[dimension].begin();
-    if (range.high >= gridlines[dimension].size()) {
-        range.high = gridlines[dimension].size() - 1;
-    } else if (gridlines[dimension][range.high] > locInterval.high) {
-        range.high -= 1;
-    }
-    return range;
-}
+// utils::IntervalT<int> GridGraph::rangeSearchGridlines(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const {
+//     utils::IntervalT<int> range;
+//     range.low = lower_bound(gridlines[dimension].begin(), gridlines[dimension].end(), locInterval.low) - gridlines[dimension].begin();
+//     range.high = lower_bound(gridlines[dimension].begin(), gridlines[dimension].end(), locInterval.high) - gridlines[dimension].begin();
+//     if (range.high >= gridlines[dimension].size()) {
+//         range.high = gridlines[dimension].size() - 1;
+//     } else if (gridlines[dimension][range.high] > locInterval.high) {
+//         range.high -= 1;
+//     }
+//     return range;
+// }
   
-utils::IntervalT<int> GridGraph::rangeSearchRows(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const {
-    const auto& lineRange = rangeSearchGridlines(dimension, locInterval);
-    return {
-        gridlines[dimension][lineRange.low] == locInterval.low ? lineRange.low : max(lineRange.low - 1, 0),
-        gridlines[dimension][lineRange.high] == locInterval.high ? lineRange.high - 1 : min(lineRange.high, static_cast<int>(getSize(dimension)) - 1)
-    };
-}
+// utils::IntervalT<int> GridGraph::rangeSearchRows(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const {
+//     const auto& lineRange = rangeSearchGridlines(dimension, locInterval);
+//     return {
+//         gridlines[dimension][lineRange.low] == locInterval.low ? lineRange.low : max(lineRange.low - 1, 0),
+//         gridlines[dimension][lineRange.high] == locInterval.high ? lineRange.high - 1 : min(lineRange.high, static_cast<int>(getSize(dimension)) - 1)
+//     };
+// }
 
-int GridGraph::searchXGridline(const int x) const {
-    auto it = std::lower_bound(gridlines[0].begin(), gridlines[0].end(), x);
+// int GridGraph::searchXGridline(const int x) const {
+//     auto it = std::lower_bound(gridlines[0].begin(), gridlines[0].end(), x);
     
-    if (it == gridlines[0].end()) {
-        cout << "Warning: x is out of range." << endl;
-        return gridlines[0].size() - 1;
-    }
+//     if (it == gridlines[0].end()) {
+//         cout << "Warning: x is out of range." << endl;
+//         return gridlines[0].size() - 1;
+//     }
 
-    int idx = it - gridlines[0].begin();
-    if (idx > xSize) {
-        cout << "Warning: idx x is out of range." << endl;
-        return gridlines[0].size() - 1;
-    }
+//     int idx = it - gridlines[0].begin();
+//     if (idx > xSize) {
+//         cout << "Warning: idx x is out of range." << endl;
+//         return gridlines[0].size() - 1;
+//     }
     
-    return idx;
-}
+//     return idx;
+// }
 
-int GridGraph::searchYGridline(const int y) const {
-    auto it = std::lower_bound(gridlines[1].begin(), gridlines[1].end(), y);
+// int GridGraph::searchYGridline(const int y) const {
+//     auto it = std::lower_bound(gridlines[1].begin(), gridlines[1].end(), y);
     
-    if (it == gridlines[1].end()) {
-        cout << "Warning: y is out of range." << endl;
-        return gridlines[1].size() - 1;
-    }
+//     if (it == gridlines[1].end()) {
+//         cout << "Warning: y is out of range." << endl;
+//         return gridlines[1].size() - 1;
+//     }
     
-    int idx = it - gridlines[1].begin();
-    if (idx > ySize) {
-        cout << "Warning: idx y is out of range." << endl;
-        return gridlines[1].size() - 1;
-    }
+//     int idx = it - gridlines[1].begin();
+//     if (idx > ySize) {
+//         cout << "Warning: idx y is out of range." << endl;
+//         return gridlines[1].size() - 1;
+//     }
 
-    return idx;
-}
+//     return idx;
+// }
 
-utils::BoxT<DBU> GridGraph::getCellBox(utils::PointT<int> point) const {
-    return {
-        getGridline(0, point.x), getGridline(1, point.y),
-        getGridline(0, point.x + 1), getGridline(1, point.y + 1)
-    };
-}
+// utils::BoxT<DBU> GridGraph::getCellBox(utils::PointT<int> point) const {
+//     return {
+//         getGridline(0, point.x), getGridline(1, point.y),
+//         getGridline(0, point.x + 1), getGridline(1, point.y + 1)
+//     };
+// }
 
-utils::BoxT<int> GridGraph::rangeSearchCells(const utils::BoxT<DBU>& box) const {
-    return {rangeSearchRows(0, box[0]), rangeSearchRows(1, box[1])};
-}
+// utils::BoxT<int> GridGraph::rangeSearchCells(const utils::BoxT<DBU>& box) const {
+//     return {rangeSearchRows(0, box[0]), rangeSearchRows(1, box[1])};
+// }
 
 DBU GridGraph::getEdgeLength(unsigned direction, unsigned edgeIndex) const {
-    return gridlines[direction][edgeIndex + 1] - gridlines[direction][edgeIndex];
+    return direction == 0? hEdge[edgeIndex]:vEdge[edgeIndex];
+    // return gridCenters[direction][edgeIndex];
+    // return gridlines[direction][edgeIndex + 1] - gridlines[direction][edgeIndex];
 }
 
 inline double GridGraph::logistic(const CapacityT& input, const double slope) const {
@@ -175,16 +185,12 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
     for (const auto& accessPoints : net.getPinAccessPoints()) {
         std::pair<int, int> bestAccessDist = {0, std::numeric_limits<int>::max()};
         int bestIndex = -1;
-        // cout << "-----" << endl;
         for (int index = 0; index < accessPoints.size(); index++) {
             const auto& point = accessPoints[index];
-            // std::cout << typeid(point).name() << std::endl;
             int accessibility = 0;
-            // cout << point.layerIdx << " " << parameters.min_routing_layer << endl;
             if (point.layerIdx >= parameters.min_routing_layer) {
                 unsigned direction = getLayerDirection(point.layerIdx);
                 accessibility += getEdge(point.layerIdx, point.x, point.y).capacity >= 1;
-                // cout << point[direction] << " "<< point.layerIdx << " " << point.x << " " << point.y << endl;
                 if (point[direction] > 0) {
                     auto lower = point;
                     lower[direction] -= 1;
@@ -194,7 +200,6 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
                 accessibility = 1;
             }
             int distance = abs(netCenter.x - point.x) + abs(netCenter.y - point.y);
-            // cout << accessibility << endl;
             if (accessibility > bestAccessDist.first || (accessibility == bestAccessDist.first && distance < bestAccessDist.second)) {
                 bestIndex = index;
                 bestAccessDist = {accessibility, distance};
@@ -282,7 +287,6 @@ void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool r
     });
 }
 
-
 int GridGraph::checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v) const {
     int num = 0;
     unsigned direction = layerDirections[layerIndex];
@@ -315,7 +319,6 @@ int GridGraph::checkOverflow(const std::shared_ptr<GRTreeNode>& tree) const {
     });
     return num;
 }
-
 
 std::string GridGraph::getPythonString(const std::shared_ptr<GRTreeNode>& routingTree) const {
     vector<std::tuple<utils::PointT<int>, utils::PointT<int>, bool>> edges;

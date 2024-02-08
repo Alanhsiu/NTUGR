@@ -59,6 +59,7 @@ void PatternRoute::constructSteinerTree() {
             steinerTree = std::make_shared<SteinerTreeNode>(accessPoint.second.first, accessPoint.second.second);
         }
     } else {
+        // 
         int xs[degree * 4];
         int ys[degree * 4];
         int i = 0;
