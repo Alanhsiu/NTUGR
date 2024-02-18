@@ -1,3 +1,4 @@
+# data_list=("example")
 data_list=("ariane133_51")
 input_path="/home/b09901066/ISPD-NTUEE/NTUGR/input"
 output_path="/home/b09901066/ISPD-NTUEE/NTUGR/output"

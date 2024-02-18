@@ -42,3 +42,16 @@ set_property(TARGET route PROPERTY CXX_STANDARD 17)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   target_compile_options(route PRIVATE -g)
 endif()
+
+# Enable testing with CMake
+enable_testing()
+
+# Define a Valgrind test for the executable
+add_test(NAME ValgrindMemoryCheck
+         COMMAND valgrind --tool=memcheck --leak-check=full --show-reachable=yes --error-exitcode=1 $<TARGET_FILE:route>)
+
+# Optional: Add custom test properties for setting environment variables or passing arguments
+set_tests_properties(ValgrindMemoryCheck
+                     PROPERTIES ENVIRONMENT "VAR=VALUE" # Example for setting environment variables
+                                PASS_REGULAR_EXPRESSION "no leaks are possible" # Example for expecting certain output
+)
