@@ -3,5 +3,6 @@ benchmark/
 build/
 input/
 output/
+example_output/
 .vscode/
 *.tar

@@ -27,5 +27,4 @@ GRNet::GRNet(const Net& baseNet, const Design& design, const GridGraph& gridGrap
             boundingBox.hy() = std::max(boundingBox.hy(), point.y);
         }
     }
-    
 }

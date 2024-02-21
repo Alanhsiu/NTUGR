@@ -251,8 +251,8 @@ void GlobalRouter::write(std::string guide_file) {
             if (guide.second.x.low == guide.second.x.high && guide.second.y.low == guide.second.y.high) {
                 auto key = std::make_pair(guide.second.x.low, guide.second.y.low);
                 auto& value = verticalGuides[key];
-                value.first = std::min(value.first, guide.first);
-                value.second = std::max(value.second, guide.first);
+                value.first = std::min(value.first, guide.first); // find min layer
+                value.second = std::max(value.second, guide.first); // find max layer
             }
             else{
                 ss  << guide.second.x.low << " "
@@ -266,14 +266,20 @@ void GlobalRouter::write(std::string guide_file) {
 
         // Add vias for vertical guides
         for (const auto& pair : verticalGuides) {
-            for (int z = pair.second.first; z < pair.second.second; ++z) {
-                ss << pair.first.first << " "
-                   << pair.first.second << " "
-                   << z << " "
-                   << pair.first.first << " "
-                   << pair.first.second << " "
-                   << z + 1 << endl;
-            }
+            // for (int z = pair.second.first; z < pair.second.second; ++z) {
+            //     ss << pair.first.first << " "
+            //        << pair.first.second << " "
+            //        << z << " "
+            //        << pair.first.first << " "
+            //        << pair.first.second << " "
+            //        << z + 1 << endl;
+            // }
+            ss << pair.first.first << " "
+               << pair.first.second << " "
+               << pair.second.first << " "
+               << pair.first.first << " "
+               << pair.first.second << " "
+               << pair.second.second << endl;
         }
         ss << ")" << endl;
 

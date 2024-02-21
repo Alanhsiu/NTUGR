@@ -10,17 +10,6 @@ GridGraph::GridGraph(const Design& design, const Parameters& params)
     hEdge = design.dimension.hEdge;
     vEdge = design.dimension.vEdge;  // for getEdgeLength()
 
-    // initialize gridlines using hEdge and vEdge
-    // gridlines.resize(2);
-    // gridlines[0].resize(xSize + 1);
-    // gridlines[1].resize(ySize + 1);
-    // gridlines[0][0] = 0;
-    // gridlines[1][0] = 0;
-    // for (unsigned i = 1; i <= xSize; i++)
-    //     gridlines[0][i] = gridlines[0][i - 1] + design.dimension.hEdge[i - 1];
-    // for (unsigned i = 1; i <= ySize; i++)
-    //     gridlines[1][i] = gridlines[1][i - 1] + design.dimension.vEdge[i - 1];
-
     // initialize gridCenters hEdge and vEdge
     gridCenters.resize(2);
     gridCenters[0].resize(xSize);
@@ -58,60 +47,6 @@ GridGraph::GridGraph(const Design& design, const Parameters& params)
     }
 }
 
-// utils::IntervalT<int> GridGraph::rangeSearchGridlines(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const {
-//     utils::IntervalT<int> range;
-//     range.low = lower_bound(gridlines[dimension].begin(), gridlines[dimension].end(), locInterval.low) - gridlines[dimension].begin();
-//     range.high = lower_bound(gridlines[dimension].begin(), gridlines[dimension].end(), locInterval.high) - gridlines[dimension].begin();
-//     if (range.high >= gridlines[dimension].size()) {
-//         range.high = gridlines[dimension].size() - 1;
-//     } else if (gridlines[dimension][range.high] > locInterval.high) {
-//         range.high -= 1;
-//     }
-//     return range;
-// }
-
-// utils::IntervalT<int> GridGraph::rangeSearchRows(const unsigned dimension, const utils::IntervalT<DBU>& locInterval) const {
-//     const auto& lineRange = rangeSearchGridlines(dimension, locInterval);
-//     return {
-//         gridlines[dimension][lineRange.low] == locInterval.low ? lineRange.low : max(lineRange.low - 1, 0),
-//         gridlines[dimension][lineRange.high] == locInterval.high ? lineRange.high - 1 : min(lineRange.high, static_cast<int>(getSize(dimension)) - 1)
-//     };
-// }
-
-// int GridGraph::searchXGridline(const int x) const {
-//     auto it = std::lower_bound(gridlines[0].begin(), gridlines[0].end(), x);
-
-//     if (it == gridlines[0].end()) {
-//         cout << "Warning: x is out of range." << endl;
-//         return gridlines[0].size() - 1;
-//     }
-
-//     int idx = it - gridlines[0].begin();
-//     if (idx > xSize) {
-//         cout << "Warning: idx x is out of range." << endl;
-//         return gridlines[0].size() - 1;
-//     }
-
-//     return idx;
-// }
-
-// int GridGraph::searchYGridline(const int y) const {
-//     auto it = std::lower_bound(gridlines[1].begin(), gridlines[1].end(), y);
-
-//     if (it == gridlines[1].end()) {
-//         cout << "Warning: y is out of range." << endl;
-//         return gridlines[1].size() - 1;
-//     }
-
-//     int idx = it - gridlines[1].begin();
-//     if (idx > ySize) {
-//         cout << "Warning: idx y is out of range." << endl;
-//         return gridlines[1].size() - 1;
-//     }
-
-//     return idx;
-// }
-
 // utils::BoxT<DBU> GridGraph::getCellBox(utils::PointT<int> point) const {
 //     return {
 //         getGridline(0, point.x), getGridline(1, point.y),
@@ -142,7 +77,6 @@ CostT GridGraph::getWireCost(const int layerIndex, const utils::PointT<int> lowe
     cost += demandLength * (
         edge.capacity < 1.0 ? 1.0 : logistic(edge.capacity - edge.demand, parameters.cost_logistic_slope)
     );
-    // cout << "layerIndex: " << layerIndex << " lower: " << lower << " demand: " << demand << " edgeLength: " << edgeLength << " demandLength: " << demandLength << " cost: " << cost << endl;
     return cost;
 }
 
@@ -166,19 +100,18 @@ CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) 
     assert(layerIndex + 1 < nLayers);
     CostT cost = UnitViaCost;
     // Estimated wire cost to satisfy min-area
-    // for (int l = layerIndex; l <= layerIndex + 1; l++) {
-    //     unsigned direction = layerDirections[l];
-    //     utils::PointT<int> lowerLoc = loc;
-    //     lowerLoc[direction] -= 1;
-    //     DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
-    //     DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-    //     CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
-    //     if (lowerEdgeLength > 0)
-    //         cost += getWireCost(l, lowerLoc, demand);
-    //     if (higherEdgeLength > 0)
-    //         cost += getWireCost(l, loc, demand);
-    // }
-    // cout << "layerIndex: " << layerIndex << " loc: " << loc << " cost: " << cost << endl;
+    for (int l = layerIndex; l <= layerIndex + 1; l++) {
+        unsigned direction = layerDirections[l];
+        utils::PointT<int> lowerLoc = loc;
+        lowerLoc[direction] -= 1;
+        DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
+        DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
+        CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        if (lowerEdgeLength > 0)
+            cost += getWireCost(l, lowerLoc, demand);
+        if (higherEdgeLength > 0)
+            cost += getWireCost(l, loc, demand);
+    }
     return cost;
 }
 
@@ -213,7 +146,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
         }
         // if (bestAccessDist.first == 0) {
         //     cout << "Warning: the pin is hard to access." << endl;
-        // }
+        // } 
         const utils::PointT<int> selectedPoint = accessPoints[bestIndex];
         const uint64_t hash = hashCell(selectedPoint.x, selectedPoint.y);
         if (selectedAccessPoints.find(hash) == selectedAccessPoints.end()) {
@@ -235,6 +168,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
 
 void GridGraph::commit(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand) {
     graphEdges[layerIndex][lower.x][lower.y].demand += demand;
+    assert(graphEdges[layerIndex][lower.x][lower.y].demand > -1);
 }
 
 void GridGraph::commitWire(const int layerIndex, const utils::PointT<int> lower, const bool reverse) {
@@ -258,6 +192,7 @@ void GridGraph::commitVia(const int layerIndex, const utils::PointT<int> loc, co
         DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
         DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
         CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        assert(demand > -1);
         if (lowerEdgeLength > 0)
             commit(l, lowerLoc, (reverse ? -demand : demand));
         if (higherEdgeLength > 0)
@@ -267,9 +202,11 @@ void GridGraph::commitVia(const int layerIndex, const utils::PointT<int> loc, co
         totalNumVias -= 1;
     else
         totalNumVias += 1;
+
+    assert(totalNumVias >= 0);
 }
 
-void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool reverse) {
+void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool reverse) { // reverse: remove the tree
     GRTreeNode::preorder(tree, [&](std::shared_ptr<GRTreeNode> node) {
         for (const auto& child : node->children) {
             if (node->layerIdx == child->layerIdx) {
@@ -423,6 +360,8 @@ void GridGraph::extractWireCostView(GridGraphView<CostT>& view) const {
                     const auto& edge = getEdge(layerIndex, x, y);
                     capacity += edge.capacity;
                     demand += edge.demand;
+                    assert(capacity >= 0);
+                    assert(demand > -1);
                 }
                 DBU length = getEdgeLength(direction, edgeIndex);
                 view[direction][x][y] = length * (UnitLengthWireCost + unitLengthShortCost * (capacity < 1.0 ? 1.0 : logistic(capacity - demand, parameters.maze_logistic_slope)));
@@ -452,6 +391,8 @@ void GridGraph::updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<G
             const auto& edge = getEdge(layerIndex, x, y);
             capacity += edge.capacity;
             demand += edge.demand;
+            assert(capacity >= 0);
+            assert(demand > -1);
         }
         DBU length = getEdgeLength(direction, edgeIndex);
         view[direction][x][y] = length * (UnitLengthWireCost + unitLengthShortCost[direction] * (capacity < 1.0 ? 1.0 : logistic(capacity - demand, parameters.maze_logistic_slope)));

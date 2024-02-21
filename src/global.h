@@ -39,7 +39,7 @@ struct Parameters {
     const int min_routing_layer = 1;
     const double max_detour_ratio = 0.25;
     const int target_detour_count = 20;
-    const double via_multiplier = 2.0;
+    const double via_multiplier = 1.5; // can change to 1.0, 1.5, 2.0 
 
     const double cost_logistic_slope = 1.0;
     const double maze_logistic_slope = 0.5;

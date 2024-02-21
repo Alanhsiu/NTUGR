@@ -416,6 +416,7 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
             for (int layerIndex = parameters.min_routing_layer; layerIndex < gridGraph.getNumLayers(); layerIndex++) {
                 if (gridGraph.getLayerDirection(layerIndex) != direction) continue;
                 CostT cost = path->costs[layerIndex] + gridGraph.getWireCost(layerIndex, *node, *path);
+                assert(cost >= 0);
                 if (cost < costs[layerIndex].first) costs[layerIndex] = std::make_pair(cost, pathIndex);
             }
         }
@@ -454,7 +455,9 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
             }
             if (layerIndex >= fixedLayers.high) {
                 CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
+                assert(cost >= 0);
                 for (CostT childCost : minChildCosts) cost += childCost;
+                assert(cost >= 0);
                 if (cost < node->costs[layerIndex]) {
                     node->costs[layerIndex] = cost;
                     node->bestPaths[layerIndex] = bestPaths;

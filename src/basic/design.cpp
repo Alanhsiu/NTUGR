@@ -61,14 +61,7 @@ bool Design::readCap(const string& filename) {
         getline(inputFile, line);
         istringstream iss(line);
         iss >> name >> layer.direction >> layer.minLength;
-        // vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
-        // for (int i = 0; i < dimension.y_size; i++) {
-        //     getline(inputFile, line);
-        //     istringstream iss(line);
-        //     for (int j = 0; j < dimension.x_size; j++) {
-        //         iss >> cap[i][j];
-        //     }
-        // }
+        layer.minLength = layer.minLength;
         vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
         for (int i = 0; i < dimension.y_size; i++) {
             getline(inputFile, line);
@@ -77,11 +70,6 @@ bool Design::readCap(const string& filename) {
                 iss >> cap[i][j];
             }
         }
-        // for (int j = 0; j < dimension.x_size; j++) {
-        //         cout << cap[dimension.y_size-1][j] << " ";
-        //     }
-        //     cout <<"----" << endl;
-        // cout << "x_size: " << dimension.x_size << ", y_size: " << dimension.y_size << endl;
         layer.capacity = cap;
         layers.push_back(layer);
     }
@@ -132,13 +120,11 @@ bool Design::readNet(const string& filename) {
                 iss.ignore(1, ')');
                 iss >> comma >> ws;
                 Point point(point_id++, net_id, layer, x, y);
-                // cout << "point_id: " << point.id << ", x: " << point.x << ", y: " << point.y << ", layer: " << point.layer << endl;
                 point_ids.push_back(point.id);
                 points.emplace_back(point);
             }
 
             pin.point_ids = point_ids;
-            // cout << "pin_id: " << pin.id << ", pin_size: " << pin.point_ids.size() << endl;
             pin_ids.push_back(pin.id);
             pins.emplace_back(pin);
         }

@@ -18,6 +18,9 @@ for line in lines:
     y = [line[1], line[4]]
     z = [line[2], line[5]]
     ax.plot(x, y, z)
+    
+    for i, line in enumerate(lines):
+        ax.text(line[0], line[1], line[2], f'Line {i+1}: ({line[0]}, {line[1]}, {line[2]}) to ({line[3]}, {line[4]}, {line[5]})', color='red')
 
 # Setting labels to display only integers on the axes
 ax.set_xticks(range(int(min(x)), int(max(x))+1))
