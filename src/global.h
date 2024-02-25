@@ -12,8 +12,8 @@ using namespace std;
 #include <string>
 #include <csignal>
 #include <vector>
-// #include <unordered_map>
-// #include <unordered_set>
+#include <unordered_map>
+#include <unordered_set>
 #include <thread>
 #include <mutex>
 #include <set>
@@ -41,7 +41,8 @@ struct Parameters {
     const int target_detour_count = 20;
     const double via_multiplier = 1.5; // can change to 1.0, 1.5, 2.0 
 
-    const double cost_logistic_slope = 1.0;
+    const double cost_logistic_slope1 = 1.5;
+    const double cost_logistic_slope2 = 0.5;
     const double maze_logistic_slope = 0.5;
     const bool write_heatmap = false;
     

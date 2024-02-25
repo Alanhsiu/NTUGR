@@ -21,6 +21,10 @@ void GlobalRouter::route() {
     vector<int> netIndices;
     netIndices.reserve(nets.size());
     for (const auto& net : nets) netIndices.push_back(net.getIndex());
+    
+    for (const auto& net : nets)
+        if(net.name == "tcdm_slave_northeast_resp_o[12]") 
+            cout << "===== start stage 1 =====" << endl;
 
     // Stage 1: Pattern routing
     n1 = netIndices.size();
@@ -29,10 +33,16 @@ void GlobalRouter::route() {
     sortNetIndices(netIndices);
     for (const int netIndex : netIndices) {
         PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
+        if(netIndex == 577) 
+            cout << "id: " << netIndex << " debug1" << endl;
         patternRoute.constructSteinerTree();
         patternRoute.constructRoutingDAG();
         patternRoute.run();
-        gridGraph.commitTree(nets[netIndex].getRoutingTree());
+        // gridGraph.commitTree(nets[netIndex].getRoutingTree());
+        std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
+        gridGraph.commitTree(tree);
+        if(netIndex == 577) 
+            cout << "id: " << netIndex << " debug2" << endl;
     }
 
     netIndices.clear();
@@ -41,15 +51,16 @@ void GlobalRouter::route() {
             netIndices.push_back(net.getIndex());
         }
     }
-    // print net indices with overflow
-    // for (int netIndex : netIndices) {
-    //     cout << "net " << netIndex << " has overflow." << endl;
-    // }
+
     cout << netIndices.size() << " / " << nets.size() << " nets have overflows." << endl;
     t1 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
     t = std::chrono::high_resolution_clock::now();
 
     cout << "stage 1 time elapsed: " << t1 << endl;
+
+    for (const auto& netidx : netIndices) 
+        if(nets[netidx].name == "tcdm_slave_northeast_resp_o[12]") 
+            cout << "===== start stage 2 =====" << endl;
 
     // Stage 2: Pattern routing with possible detours
     n2 = netIndices.size();
@@ -72,6 +83,8 @@ void GlobalRouter::route() {
         
         netIndices.clear();
         for (const auto& net : nets) {
+            if(net.name == "tcdm_slave_east_req_ready_o") 
+                cout << "id: " << net.getIndex() << " debug3" << endl;
             if (gridGraph.checkOverflow(net.getRoutingTree()) > 0) {
                 netIndices.push_back(net.getIndex());
             }
@@ -82,6 +95,10 @@ void GlobalRouter::route() {
     t = std::chrono::high_resolution_clock::now();
 
     cout << "stage 2 time elapsed: " << t2 << endl;
+
+    for (const auto& netidx : netIndices) 
+        if(nets[netidx].name == "tcdm_slave_east_req_ready_o") 
+            cout << "===== start stage 3 =====" << endl;
 
     // Stage 3: maze routing on sparsified routing graph
     n3 = netIndices.size();
@@ -96,6 +113,8 @@ void GlobalRouter::route() {
         sortNetIndices(netIndices);
         SparseGrid grid(10, 10, 0, 0);
         for (const int netIndex : netIndices) {
+            if(nets[netIndex].name == "tcdm_slave_northeast_resp_o[12]") 
+                cout << "id: " << netIndex << " debug3" << endl;
             GRNet& net = nets[netIndex];
             // gridGraph.commitTree(net.getRoutingTree(), true);
             // gridGraph.updateWireCostView(wireCostView, net.getRoutingTree());
@@ -158,12 +177,17 @@ void GlobalRouter::getGuides(const GRNet& net, vector<std::pair<int, utils::BoxT
                         max(node->x, child->x), max(node->y, child->y)
                     )
                 );
-            } else {
+            }
+            else {
                 int maxLayerIndex = max(node->layerIdx, child->layerIdx);
                 for (int layerIdx = min(node->layerIdx, child->layerIdx); layerIdx <= maxLayerIndex; layerIdx++) {
                     guides.emplace_back(layerIdx, utils::BoxT<int>(node->x, node->y));
                 }
             }
+
+            // if(node->layerIdx == 0)
+            //     guides.emplace_back(node->layerIdx, utils::BoxT<int>(node->x, node->y));
+
         }
     });
 }
@@ -228,7 +252,6 @@ void GlobalRouter::printStatistics() const {
 
     cout << "min resource: " << minResource << endl;
     cout << "bottleneck:   " << bottleneck << endl;
-
 }
 
 
@@ -240,6 +263,8 @@ void GlobalRouter::write(std::string guide_file) {
     for (const GRNet& net : nets) {
         vector<std::pair<int, utils::BoxT<int>>> guides;
         getGuides(net, guides);
+        if(net.name == "tcdm_slave_northeast_resp_o[12]") 
+            cout << "id: " << net.getIndex() << " debug4" << endl;
         
         ss << net.getName() << endl;
         ss << "(" << endl;
@@ -250,9 +275,20 @@ void GlobalRouter::write(std::string guide_file) {
             // Store vertical guides to add vias later
             if (guide.second.x.low == guide.second.x.high && guide.second.y.low == guide.second.y.high) {
                 auto key = std::make_pair(guide.second.x.low, guide.second.y.low);
-                auto& value = verticalGuides[key];
-                value.first = std::min(value.first, guide.first); // find min layer
-                value.second = std::max(value.second, guide.first); // find max layer
+                bool isExist = verticalGuides.find(key) != verticalGuides.end();
+
+                if (isExist) {
+                    auto& value = verticalGuides[key];
+                    value.first = std::min(value.first, guide.first); // find min layer
+                    value.second = std::max(value.second, guide.first); // find max layer
+                }
+                else{
+                    verticalGuides[key] = std::make_pair(guide.first, guide.first);
+                }
+
+                // auto& value = verticalGuides[key];
+                // value.first = std::min(value.first, guide.first); // find min layer
+                // value.second = std::max(value.second, guide.first); // find max layer
             }
             else{
                 ss  << guide.second.x.low << " "
@@ -266,14 +302,6 @@ void GlobalRouter::write(std::string guide_file) {
 
         // Add vias for vertical guides
         for (const auto& pair : verticalGuides) {
-            // for (int z = pair.second.first; z < pair.second.second; ++z) {
-            //     ss << pair.first.first << " "
-            //        << pair.first.second << " "
-            //        << z << " "
-            //        << pair.first.first << " "
-            //        << pair.first.second << " "
-            //        << z + 1 << endl;
-            // }
             ss << pair.first.first << " "
                << pair.first.second << " "
                << pair.second.first << " "
@@ -284,25 +312,6 @@ void GlobalRouter::write(std::string guide_file) {
         ss << ")" << endl;
 
         // --- end of modification ---
-
-        // for (const auto& guide : guides) {
-        //     ss << guide.second.x.low << " "
-        //         << guide.second.y.low << " "
-        //         << guide.first << " "
-        //         << guide.second.x.high+1 << " "
-        //         << guide.second.y.high+1 << " "
-        //         << guide.first << endl;
-        // }
-        // ss << ")" << endl;
-        // for (const auto& guide : guides) {
-        //     ss << gridGraph.getGridline(0, guide.second.x.low) << " "
-        //          << gridGraph.getGridline(1, guide.second.y.low) << " "
-        //          << gridGraph.getGridline(0, guide.second.x.high + 1) << " "
-        //          << gridGraph.getGridline(1, guide.second.y.high + 1) << " "
-        //         //  << gridGraph.getLayerName(guide.first) << endl;
-        //             << guide.first << endl;
-        // }
-        // ss << ")" << endl;
     }
 
     cout << endl;

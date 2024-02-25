@@ -87,7 +87,7 @@ public:
 
     inline CostT getUnitLengthWireCost() const { return UnitLengthWireCost; }
 
-    inline double logistic(const CapacityT& input, const double slope) const;
+    inline double logistic(const CapacityT& input, bool s) const;
     CostT getWireCost(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand = 1.0) const;
 
     // Methods for updating demands 

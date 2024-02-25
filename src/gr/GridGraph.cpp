@@ -64,8 +64,9 @@ DBU GridGraph::getEdgeLength(unsigned direction, unsigned edgeIndex) const {
     // return gridlines[direction][edgeIndex + 1] - gridlines[direction][edgeIndex];
 }
 
-inline double GridGraph::logistic(const CapacityT& input, const double slope) const {
-    return 1.0 / (1.0 + exp(input * slope));
+inline double GridGraph::logistic(const CapacityT& input, bool s) const {
+    double slope = s ? parameters.cost_logistic_slope1 : parameters.cost_logistic_slope2;
+    return exp(-input * slope);
 }
 
 CostT GridGraph::getWireCost(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand) const {
@@ -74,9 +75,8 @@ CostT GridGraph::getWireCost(const int layerIndex, const utils::PointT<int> lowe
     DBU demandLength = demand * edgeLength;
     const auto& edge = graphEdges[layerIndex][lower.x][lower.y];
     CostT cost = demandLength * UnitLengthWireCost;
-    cost += demandLength * (
-        edge.capacity < 1.0 ? 1.0 : logistic(edge.capacity - edge.demand, parameters.cost_logistic_slope)
-    );
+    bool s = edge.capacity < 0.01;
+    cost += demandLength * logistic(edge.capacity - edge.demand, s);
     return cost;
 }
 
@@ -162,7 +162,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
     // Extend the fixed layers to 2 layers higher to facilitate track switching
     for (auto& accessPoint : selectedAccessPoints) {
         utils::IntervalT<int>& fixedLayers = accessPoint.second.second;
-        fixedLayers.high = min(fixedLayers.high + 2, (int)getNumLayers() - 1);
+        fixedLayers.high = min(fixedLayers.high + 1, (int)getNumLayers() - 1);
     }
 }
 
@@ -206,7 +206,7 @@ void GridGraph::commitVia(const int layerIndex, const utils::PointT<int> loc, co
     assert(totalNumVias >= 0);
 }
 
-void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool reverse) { // reverse: remove the tree
+void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool reverse) {
     GRTreeNode::preorder(tree, [&](std::shared_ptr<GRTreeNode> node) {
         for (const auto& child : node->children) {
             if (node->layerIdx == child->layerIdx) {
@@ -261,9 +261,30 @@ int GridGraph::checkOverflow(const std::shared_ptr<GRTreeNode>& tree) const {
     int num = 0;
     GRTreeNode::preorder(tree, [&](std::shared_ptr<GRTreeNode> node) {
         for (auto& child : node->children) {
-            // Only check wires
             if (node->layerIdx == child->layerIdx) {
                 num += checkOverflow(node->layerIdx, (utils::PointT<int>)*node, (utils::PointT<int>)*child);
+            }
+            else {
+                assert(node->x == child->x && node->y == child->y);
+                int maxLayerIndex = max(node->layerIdx, child->layerIdx);
+                for (int layerIdx = min(node->layerIdx, child->layerIdx) + 1; layerIdx < maxLayerIndex - 1; layerIdx++) {
+                    // num += checkOverflow(layerIdx, node->x, node->y); 
+                    if(getEdge(layerIdx, node->x, node->y).capacity < 0.01) {
+                        num++;
+
+                        // // // change node from (x, y, layerIdx) to (x+1, y, layerIdx) and insert a intermediate node between node and child, which is (x+1, y, child->layerIdx)
+                        // std::shared_ptr<GRTreeNode> newNode = std::make_shared<GRTreeNode>(node->layerIdx, node->x+1, node->y);
+                        
+                        // // remove child from node's children
+                        // node->children.erase(std::remove(node->children.begin(), node->children.end(), child), node->children.end());
+
+                        // // add newNode to node's children
+                        // node->children.push_back(newNode);
+
+                        // // add child to newNode's children
+                        // newNode->children.push_back(child);
+                    }
+                }
             }
         }
     });
@@ -341,12 +362,9 @@ void GridGraph::extractWireCostView(GridGraphView<CostT>& view) const {
     view.assign(2, vector<vector<CostT>>(xSize, vector<CostT>(ySize, std::numeric_limits<CostT>::max())));
     for (unsigned direction = 0; direction < 2; direction++) {
         vector<int> layerIndices;
-        // CostT unitLengthShortCost = std::numeric_limits<CostT>::max();
-        CostT unitLengthShortCost = 0;
         for (int layerIndex = parameters.min_routing_layer; layerIndex < getNumLayers(); layerIndex++) {
             if (getLayerDirection(layerIndex) == direction) {
                 layerIndices.emplace_back(layerIndex);
-                // unitLengthShortCost = min(unitLengthShortCost, getUnitLengthShortCost(layerIndex));
             }
         }
         for (int x = 0; x < xSize; x++) {
@@ -364,7 +382,7 @@ void GridGraph::extractWireCostView(GridGraphView<CostT>& view) const {
                     assert(demand > -1);
                 }
                 DBU length = getEdgeLength(direction, edgeIndex);
-                view[direction][x][y] = length * (UnitLengthWireCost + unitLengthShortCost * (capacity < 1.0 ? 1.0 : logistic(capacity - demand, parameters.maze_logistic_slope)));
+                view[direction][x][y] = length * UnitLengthWireCost;
             }
         }
     }
@@ -372,12 +390,9 @@ void GridGraph::extractWireCostView(GridGraphView<CostT>& view) const {
 
 void GridGraph::updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<GRTreeNode> routingTree) const {
     vector<vector<int>> sameDirectionLayers(2);
-    // vector<CostT> unitLengthShortCost(2, std::numeric_limits<CostT>::max());
-    vector<CostT> unitLengthShortCost(2, 0);
     for (int layerIndex = parameters.min_routing_layer; layerIndex < getNumLayers(); layerIndex++) {
         unsigned direction = getLayerDirection(layerIndex);
         sameDirectionLayers[direction].emplace_back(layerIndex);
-        // unitLengthShortCost[direction] = min(unitLengthShortCost[direction], getUnitLengthShortCost(layerIndex));
     }
     auto update = [&](unsigned direction, int x, int y) {
         int edgeIndex = direction == 0 ? x : y;
@@ -395,7 +410,8 @@ void GridGraph::updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<G
             assert(demand > -1);
         }
         DBU length = getEdgeLength(direction, edgeIndex);
-        view[direction][x][y] = length * (UnitLengthWireCost + unitLengthShortCost[direction] * (capacity < 1.0 ? 1.0 : logistic(capacity - demand, parameters.maze_logistic_slope)));
+
+        view[direction][x][y] = length * UnitLengthWireCost;
     };
     GRTreeNode::preorder(routingTree, [&](std::shared_ptr<GRTreeNode> node) {
         for (const auto& child : node->children) {
