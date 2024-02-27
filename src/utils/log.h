@@ -44,7 +44,7 @@ public:
 // 3. Easy print
 
 // print(a, b, c)
-inline void print() { std::cout << std::endl; }
+inline void print() { std::cout << '\n'; }
 template <typename T, typename... TAIL>
 void print(const T& t, TAIL... tail) {
     std::cout << t << ' ';

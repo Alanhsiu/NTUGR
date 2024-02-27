@@ -106,7 +106,8 @@ CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) 
         lowerLoc[direction] -= 1;
         DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
         DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-        CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        CapacityT demand = parameters.UnitViaDemand;
         if (lowerEdgeLength > 0)
             cost += getWireCost(l, lowerLoc, demand);
         if (higherEdgeLength > 0)
@@ -145,7 +146,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
             }
         }
         // if (bestAccessDist.first == 0) {
-        //     cout << "Warning: the pin is hard to access." << endl;
+        //     cout << "Warning: the pin is hard to access." << '\n';
         // } 
         const utils::PointT<int> selectedPoint = accessPoints[bestIndex];
         const uint64_t hash = hashCell(selectedPoint.x, selectedPoint.y);
@@ -162,7 +163,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
     // Extend the fixed layers to 2 layers higher to facilitate track switching
     for (auto& accessPoint : selectedAccessPoints) {
         utils::IntervalT<int>& fixedLayers = accessPoint.second.second;
-        fixedLayers.high = min(fixedLayers.high + 1, (int)getNumLayers() - 1);
+        fixedLayers.high = min(fixedLayers.high + 2, (int)getNumLayers() - 1);
     }
 }
 
@@ -191,13 +192,17 @@ void GridGraph::commitVia(const int layerIndex, const utils::PointT<int> loc, co
         lowerLoc[direction] -= 1;
         DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
         DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-        CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        CapacityT demand = parameters.UnitViaDemand;
         assert(demand > -1);
         if (lowerEdgeLength > 0)
             commit(l, lowerLoc, (reverse ? -demand : demand));
         if (higherEdgeLength > 0)
             commit(l, loc, (reverse ? -demand : demand));
     }
+    // for (int l = layerIndex; l <= layerIndex + 1; l++) {
+    //     commit(l, loc, (reverse ? -0.5 : 0.5));
+    // }
     if (reverse)
         totalNumVias -= 1;
     else
@@ -234,56 +239,62 @@ void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool r
     });
 }
 
-int GridGraph::checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v) const {
+bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int stage) const {
+    if(stage == 3){
+        return getEdge(layerIndex, x, y).getResource() < 0;
+    }
+    else if(stage == 2){
+        return getEdge(layerIndex, x, y).getResource() < -1;
+    }
+    // stage == 1
+    return getEdge(layerIndex, x, y).getResource() < -2;
+    
+    // if(stage == 3){
+    //     return getEdge(layerIndex, x, y).getResource() < -2;
+    // }
+    // else if(stage == 2){
+    //     return getEdge(layerIndex, x, y).getResource() < -1;
+    // }
+    // // stage == 1
+    // return getEdge(layerIndex, x, y).getResource() < 0;
+}
+
+
+int GridGraph::checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v, int stage) const {
     int num = 0;
     unsigned direction = layerDirections[layerIndex];
     if (direction == 0) {
         assert(u.y == v.y);
         int l = min(u.x, v.x), h = max(u.x, v.x);
         for (int x = l; x < h; x++) {
-            if (checkOverflow(layerIndex, x, u.y))
+            if (checkOverflow_stage(layerIndex, x, u.y, stage))
                 num++;
         }
     } else {
         assert(u.x == v.x);
         int l = min(u.y, v.y), h = max(u.y, v.y);
         for (int y = l; y < h; y++) {
-            if (checkOverflow(layerIndex, u.x, y))
+            if (checkOverflow_stage(layerIndex, u.x, y, stage))
                 num++;
         }
     }
     return num;
 }
 
-int GridGraph::checkOverflow(const std::shared_ptr<GRTreeNode>& tree) const {
+int GridGraph::checkOverflow(const std::shared_ptr<GRTreeNode>& tree, int stage) const {
     if (!tree)
         return 0;
     int num = 0;
     GRTreeNode::preorder(tree, [&](std::shared_ptr<GRTreeNode> node) {
         for (auto& child : node->children) {
             if (node->layerIdx == child->layerIdx) {
-                num += checkOverflow(node->layerIdx, (utils::PointT<int>)*node, (utils::PointT<int>)*child);
+                num += checkOverflow(node->layerIdx, (utils::PointT<int>)*node, (utils::PointT<int>)*child, stage);
             }
             else {
                 assert(node->x == child->x && node->y == child->y);
                 int maxLayerIndex = max(node->layerIdx, child->layerIdx);
                 for (int layerIdx = min(node->layerIdx, child->layerIdx) + 1; layerIdx < maxLayerIndex - 1; layerIdx++) {
-                    // num += checkOverflow(layerIdx, node->x, node->y); 
-                    if(getEdge(layerIdx, node->x, node->y).capacity < 0.01) {
-                        num++;
-
-                        // // // change node from (x, y, layerIdx) to (x+1, y, layerIdx) and insert a intermediate node between node and child, which is (x+1, y, child->layerIdx)
-                        // std::shared_ptr<GRTreeNode> newNode = std::make_shared<GRTreeNode>(node->layerIdx, node->x+1, node->y);
-                        
-                        // // remove child from node's children
-                        // node->children.erase(std::remove(node->children.begin(), node->children.end(), child), node->children.end());
-
-                        // // add newNode to node's children
-                        // node->children.push_back(newNode);
-
-                        // // add child to newNode's children
-                        // newNode->children.push_back(child);
-                    }
+                    num += checkOverflow_stage(layerIdx, node->x, node->y, stage); 
                 }
             }
         }
@@ -443,23 +454,23 @@ void GridGraph::updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<G
     });
 }
 
-void GridGraph::write(const std::string heatmap_file) const {
-    cout << "writing heatmap to file..." << endl;
-    std::stringstream ss;
+// void GridGraph::write(const std::string heatmap_file) const {
+//     cout << "writing heatmap to file..." << '\n';
+//     std::stringstream ss;
 
-    ss << nLayers << " " << xSize << " " << ySize << " " << endl;
-    for (int layerIndex = 0; layerIndex < nLayers; layerIndex++) {
-        // ss << layerNames[layerIndex] << endl;
-        ss << to_string(layerIndex) << endl;
-        for (int y = 0; y < ySize; y++) {
-            for (int x = 0; x < xSize; x++) {
-                ss << (graphEdges[layerIndex][x][y].capacity - graphEdges[layerIndex][x][y].demand)
-                   << (x == xSize - 1 ? "" : " ");
-            }
-            ss << endl;
-        }
-    }
-    std::ofstream fout(heatmap_file);
-    fout << ss.str();
-    fout.close();
-}
+//     ss << nLayers << " " << xSize << " " << ySize << " " << '\n';
+//     for (int layerIndex = 0; layerIndex < nLayers; layerIndex++) {
+//         // ss << layerNames[layerIndex] << '\n';
+//         ss << to_string(layerIndex) << '\n';
+//         for (int y = 0; y < ySize; y++) {
+//             for (int x = 0; x < xSize; x++) {
+//                 ss << (graphEdges[layerIndex][x][y].capacity - graphEdges[layerIndex][x][y].demand)
+//                    << (x == xSize - 1 ? "" : " ");
+//             }
+//             ss << '\n';
+//         }
+//     }
+//     std::ofstream fout(heatmap_file);
+//     fout << ss.str();
+//     fout.close();
+// }

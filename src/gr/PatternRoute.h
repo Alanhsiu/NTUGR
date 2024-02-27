@@ -19,7 +19,7 @@ class SteinerTreeNode : public utils::PointT<int> {
         : utils::PointT<int>(point), fixedLayers(_fixedLayers) {}
 
     static void preorder(std::shared_ptr<SteinerTreeNode> node, std::function<void(std::shared_ptr<SteinerTreeNode>)> visit);
-    static std::string getPythonString(std::shared_ptr<SteinerTreeNode> node);
+    // static std::string getPythonString(std::shared_ptr<SteinerTreeNode> node);
 };
 
 class PatternRoutingNode : public utils::PointT<int> {
@@ -37,7 +37,7 @@ class PatternRoutingNode : public utils::PointT<int> {
         : utils::PointT<int>(point), index(_index), optional(_optional) {}
     PatternRoutingNode(utils::PointT<int> point, utils::IntervalT<int> _fixedLayers, int _index = 0)
         : utils::PointT<int>(point), fixedLayers(_fixedLayers), index(_index), optional(false) {}
-    static std::string getPythonString(std::shared_ptr<PatternRoutingNode> routingDag);
+    // static std::string getPythonString(std::shared_ptr<PatternRoutingNode> routingDag);
 };
 
 class PatternRoute {

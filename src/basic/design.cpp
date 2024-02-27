@@ -16,7 +16,7 @@ Design::~Design() {
 bool Design::readCap(const string& filename) {
     ifstream inputFile(filename);
     if (!inputFile.is_open()) {
-        cerr << "Error opening the file." << endl;
+        cerr << "Error opening the file." << '\n';
         return false;
     }
     string line;
@@ -79,7 +79,7 @@ bool Design::readCap(const string& filename) {
 bool Design::readNet(const string& filename) {
     ifstream inputFile(filename);
     if (!inputFile.is_open()) {
-        cerr << "Error opening the file." << endl;
+        cerr << "Error opening the file." << '\n';
         return false;
     }
 
@@ -141,25 +141,71 @@ bool Design::readNet(const string& filename) {
 
     return true;
 }
-/* netlist testing */
-// int main() {
-//     NetList netlist;
-//     readNet("/Users/alanhsiu/Desktop/Github/NTUGR/input/example.net", netlist);
-//     cout << "n_nets: " << netlist.n_nets << endl;
-//     cout << "n_pins: " << netlist.n_pins << endl;
-//     cout << "n_points: " << netlist.n_points << endl;
-//     cout << "netlist: " << endl;
-//     for (int i = 0; i < netlist.n_nets; i++) {
-//         cout << "net_name: " << netlist.nets[i].name << ", net_id: " << netlist.nets[i].id << endl;
-//         cout << "(" << endl;
-//         for (int j = 0; j < netlist.nets[i].pin_ids.size(); j++) {
-//             cout << "pin_id: " << netlist.pins[netlist.nets[i].pin_ids[j]].id << ", pin_size: " << netlist.pins[netlist.nets[i].pin_ids[j]].point_ids.size() << endl;
-//             for(int k = 0; k < netlist.pins[netlist.nets[i].pin_ids[j]].point_ids.size(); k++){
-//                 int point_id = netlist.pins[netlist.nets[i].pin_ids[j]].point_ids[k];
-//                 cout << "point_id: " << netlist.points[point_id].id << ", x: " << netlist.points[point_id].x << ", y: " << netlist.points[point_id].y << ", layer: " << netlist.points[point_id].layer << endl;
-//             }
-//         }
-//         cout << ")" << endl;
-//     }
-//     return 0;
-// }
+/*
+
+void replaceChars(char *str) {
+    while (*str != '\0') {
+        if (*str == '[' || *str == ']' || *str == '(' || *str == ')' || *str == ',') {
+            *str = ' ';
+        }
+        str++;
+    }
+}
+
+bool Design::readNet(const string& filename) {
+
+    vector<Net> nets;
+    vector<Pin> pins;
+    vector<Point> points;
+
+    char net_name[1000];
+
+    int net_id = 0;
+    int pin_id = 0;
+    int point_id = 0;
+
+    FILE* inputFile = fopen(filename.c_str(), "r");
+    char line[1000];
+    if (inputFile == NULL) {
+        printf("Error opening file.\n");
+        return false;
+    }
+    while (fgets(line, sizeof(line), inputFile)){
+        sscanf(line, "%s", inputFile);
+        string str(net_name);
+        Net net(net_id++, str);
+        vector<int> pin_ids;
+        fgets(line, sizeof(line), inputFile); // consumes the "("
+        while (fgets(line, sizeof(line), inputFile)) {
+            int layer, x, y;
+            if (strcmp(line, ")\n") == 0){
+                break; // end of net
+            }
+            Pin pin(pin_id++, net_id);
+            vector<int> point_ids;
+            replaceChars(line);
+            while(scanf("%d", &layer) == 1){
+                scanf("%d", &x);
+                scanf("%d", &y);
+                Point point(point_id++, net_id, layer, x, y);
+                point_ids.push_back(point.id);
+                points.emplace_back(point);
+            }
+            pin.point_ids = point_ids;
+            pin_ids.push_back(pin.id);
+            pins.emplace_back(pin);
+        }
+        net.pin_ids = pin_ids;
+        nets.emplace_back(net);
+    }
+
+    netlist.n_nets = nets.size();
+    netlist.n_pins = pins.size();
+    netlist.n_points = points.size();
+    netlist.nets = nets;
+    netlist.pins = pins;
+    netlist.points = points;
+
+    return true;
+}
+*/

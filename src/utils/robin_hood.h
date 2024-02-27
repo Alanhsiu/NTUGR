@@ -56,7 +56,7 @@
 #ifdef ROBIN_HOOD_LOG_ENABLED
 #    include <iostream>
 #    define ROBIN_HOOD_LOG(...) \
-        std::cout << __FUNCTION__ << "@" << __LINE__ << ": " << __VA_ARGS__ << std::endl;
+        std::cout << __FUNCTION__ << "@" << __LINE__ << ": " << __VA_ARGS__ << '\n';
 #else
 #    define ROBIN_HOOD_LOG(x)
 #endif
@@ -65,7 +65,7 @@
 #ifdef ROBIN_HOOD_TRACE_ENABLED
 #    include <iostream>
 #    define ROBIN_HOOD_TRACE(...) \
-        std::cout << __FUNCTION__ << "@" << __LINE__ << ": " << __VA_ARGS__ << std::endl;
+        std::cout << __FUNCTION__ << "@" << __LINE__ << ": " << __VA_ARGS__ << '\n';
 #else
 #    define ROBIN_HOOD_TRACE(x)
 #endif
@@ -80,7 +80,7 @@ struct Counts {
     uint64_t shiftDown{};
 };
 inline std::ostream& operator<<(std::ostream& os, Counts const& c) {
-    return os << c.shiftUp << " shiftUp" << std::endl << c.shiftDown << " shiftDown" << std::endl;
+    return os << c.shiftUp << " shiftUp" << '\n' << c.shiftDown << " shiftDown" << '\n';
 }
 
 static Counts& counts() {

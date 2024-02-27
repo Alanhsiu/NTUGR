@@ -69,17 +69,17 @@
 
 // void logeol(int n) {
 //     for (int i = 0; i < n; i++) {
-//         log() << std::endl;
+//         log() << '\n';
 //     }
 // }
 
 // void loghline() {
-//     log() << "- - - - - - - - - -" << std::endl;
+//     log() << "- - - - - - - - - -" << '\n';
 // }
 
 // void logmem() {
 //     log() << "MEM: cur=" << mem_use::get_current() << "MB, "
-//           << "peak=" << mem_use::get_peak() << "MB" << std::endl;
+//           << "peak=" << mem_use::get_peak() << "MB" << '\n';
 // }
 
 // }  // namespace utils

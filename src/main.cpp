@@ -12,24 +12,28 @@ extern "C" {
 using namespace std;
 
 int main(int argc, char* argv[]){
+    ios::sync_with_stdio(false);
     auto t = std::chrono::high_resolution_clock::now();
-    cout << "GLOBAL ROUTER CUGR" << std::endl;
+    cout << "GLOBAL ROUTER CUGR" << '\n';
 
     // Parse parameters
     Parameters parameters(argc, argv);
     Design design(parameters);
-    cout << "read netlist and capacity done!" << endl;
+    cout << "read netlist and capacity done!" << '\n';
     auto t1 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
-    cout << "USED TIME FOR READ:" << t1 << std::endl;
-
+    cout << "USED TIME FOR READ:" << t1 << '\n';
+    
     // Global router
     GlobalRouter globalRouter(design, parameters);
     globalRouter.route();
+    auto t_write = std::chrono::high_resolution_clock::now();
     globalRouter.write();
+    auto t2 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t_write).count();
+    cout << "write: " << std::setprecision(3) << std::fixed << t2 << " seconds" << '\n';
 
-    cout << "GLOBAL ROUTER CUGR DONE" << std::endl;
-    auto t2 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
-    cout << "USED TIME:" << t2 << std::endl;
+    cout << "GLOBAL ROUTER CUGR DONE" << '\n';
+    auto t3 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
+    cout << "USED TIME:" << t3 << '\n';
 
     return 0;
 }

@@ -14,6 +14,6 @@ struct point
 
 typedef  struct point Point;
 
-typedef  long nn_array[8];
+typedef  long nn_array[8]; // 8 nearest neighbors
 
 #endif  /* _GLOBAL_H_ */

@@ -8,44 +8,44 @@ void SteinerTreeNode::preorder(
         preorder(child, visit);
 }
 
-std::string SteinerTreeNode::getPythonString(std::shared_ptr<SteinerTreeNode> node) {
-    vector<std::pair<utils::PointT<int>, utils::PointT<int>>> edges;
-    preorder(node, [&](std::shared_ptr<SteinerTreeNode> node) {
-        for (auto child : node->children) {
-            edges.emplace_back(*node, *child);
-        }
-    });
-    std::stringstream ss;
-    ss << "[";
-    for (int i = 0; i < edges.size(); i++) {
-        auto& edge = edges[i];
-        ss << "[" << edge.first << ", " << edge.second << "]";
-        ss << (i < edges.size() - 1 ? ", " : "]");
-    }
-    return ss.str();
-}
+// std::string SteinerTreeNode::getPythonString(std::shared_ptr<SteinerTreeNode> node) {
+//     vector<std::pair<utils::PointT<int>, utils::PointT<int>>> edges;
+//     preorder(node, [&](std::shared_ptr<SteinerTreeNode> node) {
+//         for (auto child : node->children) {
+//             edges.emplace_back(*node, *child);
+//         }
+//     });
+//     std::stringstream ss;
+//     ss << "[";
+//     for (int i = 0; i < edges.size(); i++) {
+//         auto& edge = edges[i];
+//         ss << "[" << edge.first << ", " << edge.second << "]";
+//         ss << (i < edges.size() - 1 ? ", " : "]");
+//     }
+//     return ss.str();
+// }
 
-std::string PatternRoutingNode::getPythonString(std::shared_ptr<PatternRoutingNode> routingDag) {
-    vector<std::pair<utils::PointT<int>, utils::PointT<int>>> edges;
-    std::function<void(std::shared_ptr<PatternRoutingNode>)> getEdges =
-        [&](std::shared_ptr<PatternRoutingNode> node) {
-            for (auto& childPaths : node->paths) {
-                for (auto& path : childPaths) {
-                    edges.emplace_back(*node, *path);
-                    getEdges(path);
-                }
-            }
-        };
-    getEdges(routingDag);
-    std::stringstream ss;
-    ss << "[";
-    for (int i = 0; i < edges.size(); i++) {
-        auto& edge = edges[i];
-        ss << "[" << edge.first << ", " << edge.second << "]";
-        ss << (i < edges.size() - 1 ? ", " : "]");
-    }
-    return ss.str();
-}
+// std::string PatternRoutingNode::getPythonString(std::shared_ptr<PatternRoutingNode> routingDag) {
+//     vector<std::pair<utils::PointT<int>, utils::PointT<int>>> edges;
+//     std::function<void(std::shared_ptr<PatternRoutingNode>)> getEdges =
+//         [&](std::shared_ptr<PatternRoutingNode> node) {
+//             for (auto& childPaths : node->paths) {
+//                 for (auto& path : childPaths) {
+//                     edges.emplace_back(*node, *path);
+//                     getEdges(path);
+//                 }
+//             }
+//         };
+//     getEdges(routingDag);
+//     std::stringstream ss;
+//     ss << "[";
+//     for (int i = 0; i < edges.size(); i++) {
+//         auto& edge = edges[i];
+//         ss << "[" << edge.first << ", " << edge.second << "]";
+//         ss << (i < edges.size() - 1 ? ", " : "]");
+//     }
+//     return ss.str();
+// }
 
 void PatternRoute::constructSteinerTree() {
     // 1. Select access points
@@ -101,10 +101,10 @@ void PatternRoute::constructSteinerTree() {
             // Set fixed layer interval
             uint64_t hash = gridGraph.hashCell(current->x, current->y);
             if (selectedAccessPoints.find(hash) != selectedAccessPoints.end()) {
-                auto a = selectedAccessPoints[hash];
-                if (net.name == "tcdm_slave_northeast_resp_o[12]") {
-                    a = selectedAccessPoints[hash];
-                }
+                // auto a = selectedAccessPoints[hash];
+                // if (net.name == "tcdm_slave_northeast_resp_o[12]") {
+                //     a = selectedAccessPoints[hash];
+                // }
                 current->fixedLayers = selectedAccessPoints[hash].second;
             }
             // Connect current to parent
@@ -397,7 +397,7 @@ void PatternRoute::constructDetours(GridGraphView<bool>& congestionView) {
                         }
 
                     } else {
-                        cout << "Warning: the root has not exactly one child." << endl;
+                        cout << "Warning: the root has not exactly one child." << '\n';
                     }
                 }
             }
@@ -452,7 +452,7 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
 void PatternRoute::run() {
     calculateRoutingCosts(routingDag);
     // net.setRoutingTree(getRoutingTree(routingDag));
-    if (net.name == "tcdm_slave_east_req_ready_o") {
+    if (net.name == "dma_req_i[30]") {
         printf("run");
     }
     std::shared_ptr<GRTreeNode> routingTree = getRoutingTree(routingDag);
@@ -467,6 +467,7 @@ void PatternRoute::run() {
     // check if there are duplicate access points
     bool isDuplicate = set.size() != allAccessPoints.size();    
 
+    // not pruning routing tree for mempool_cluster debugging
     if(!isDuplicate){
         pruneRoutingTree(routingTree);
     }
@@ -532,7 +533,14 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
                 }
             }
             if (layerIndex >= fixedLayers.high) {
-                CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
+                // CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
+                CostT cost = 0;
+                if(layerIndex - lowLayerIndex >= 3){
+                    cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex] - 2 * parameters.UnitViaCost;
+                }
+                else{
+                    cost = 0;
+                }
                 assert(cost >= 0);
                 for (CostT childCost : minChildCosts)
                     cost += childCost;

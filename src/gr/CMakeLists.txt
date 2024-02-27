@@ -16,3 +16,8 @@ set(GR_SOURCES
 # Add library target
 add_library(gr ${GR_SOURCES})
 target_include_directories(gr PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(gr PUBLIC OpenMP::OpenMP_CXX)
+endif()

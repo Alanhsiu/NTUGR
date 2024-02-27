@@ -55,3 +55,8 @@ set_tests_properties(ValgrindMemoryCheck
                      PROPERTIES ENVIRONMENT "VAR=VALUE" # Example for setting environment variables
                                 PASS_REGULAR_EXPRESSION "no leaks are possible" # Example for expecting certain output
 )
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(route PUBLIC OpenMP::OpenMP_CXX)
+endif()

@@ -27,6 +27,7 @@ using namespace std;
 #include <map>
 #include <queue>
 #include <typeinfo>
+#include <omp.h>
 
 #include "utils/robin_hood.h"
 
@@ -34,7 +35,7 @@ struct Parameters {
     std::string cap_file;
     std::string net_file;
     std::string out_file;
-    int threads = 1;
+    int threads = 4;
 
     const int min_routing_layer = 1;
     const double max_detour_ratio = 0.25;
@@ -45,11 +46,14 @@ struct Parameters {
     const double cost_logistic_slope2 = 0.5;
     const double maze_logistic_slope = 0.5;
     const bool write_heatmap = false;
+
+    const double UnitViaCost = 4.0;
+    const double UnitViaDemand = 0.1;
     
     // command: /evaluator $input_path/$data.cap $input_path/$data.net $output_path/$data.PR_output
     Parameters(int argc, char* argv[]) {
         if (argc <= 1) {
-            cout << "Too few args..." << endl;
+            cout << "Too few args..." << '\n';
             exit(1);
         }
         for (int i = 1; i < argc; i++) {
@@ -59,17 +63,17 @@ struct Parameters {
                 net_file = argv[++i];
             } else if (strcmp(argv[i], "-output") == 0) {
                 out_file = argv[++i];
-            } else if (strcmp(argv[i], "-threads") == 0) {
-                threads = std::stoi(argv[++i]);
+            // } else if (strcmp(argv[i], "-threads") == 0) {
+            //     threads = std::stoi(argv[++i]);
             } else {
-                cout << "Unrecognized arg..." << endl;
-                cout << argv[i] << endl;
+                cout << "Unrecognized arg..." << '\n';
+                cout << argv[i] << '\n';
             }
         }
-        cout << "cap file: " << cap_file << endl;
-        cout << "net file: " << net_file << endl;
-        cout << "output  : " << out_file << endl;
-        cout << "threads : " << threads  << endl;
-        cout << endl;
+        cout << "cap file: " << cap_file << '\n';
+        cout << "net file: " << net_file << '\n';
+        cout << "output  : " << out_file << '\n';
+        // cout << "threads : " << threads  << '\n';
+        cout << '\n';
     }
 };
