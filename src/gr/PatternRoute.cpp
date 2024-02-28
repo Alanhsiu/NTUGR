@@ -439,9 +439,7 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
         for (int i = node->children.size() - 1; i >= 0; i--) {
             pruneRoutingTree(node->children[i]);
             bool same = (node->x == node->children[i]->x) && (node->y == node->children[i]->y) && (node->layerIdx == node->children[i]->layerIdx);
-            // if(node->children[i] == nullptr || same){
-            //     node->children.erase(node->children.begin() + i);
-            // }
+            
             if (node->children[i] == nullptr) {
                 node->children.erase(node->children.begin() + i);
             }

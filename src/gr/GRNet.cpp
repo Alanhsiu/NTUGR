@@ -32,10 +32,12 @@ GRNet::GRNet(const Net& baseNet, const Design& design, const GridGraph& gridGrap
 void GRNet::getGuides() {
     if (!routingTree)
         return;
+
+    vector<vector<int>> guide;
     GRTreeNode::preorder(routingTree, [&](std::shared_ptr<GRTreeNode> node) {
         for (const auto& child : node->children) {
             if(node->x == child->x && node->y == child->y && node->layerIdx == child->layerIdx){
-                cout << "Warning: node and child are the same" << endl;
+                // cout << "Warning: node and child are the same" << endl;
                 continue;
             }
             vector<int> vec;
@@ -49,4 +51,12 @@ void GRNet::getGuides() {
             guide.push_back(vec);
         }
     });
+    guide_string = name + "\n(\n";
+    for (const auto& vec : guide) {
+        for (const auto& i : vec) {
+            guide_string += to_string(i) + " ";
+        }
+        guide_string += "\n";
+    }
+    guide_string += "\n)\n";
 }

@@ -18,7 +18,9 @@ public:
     void clearRoutingTree() { routingTree = nullptr; }
     void getGuides();
     
-    vector<vector<int>> guide;
+    // vector<vector<int>> guide;
+    string guide_string;
+
     int index;
     std::string name;
     vector<vector<GRPoint>> pinAccessPoints; // pinAccessPoints[pinIndex][accessPointIndex]
