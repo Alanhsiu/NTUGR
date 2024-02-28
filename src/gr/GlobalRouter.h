@@ -15,8 +15,7 @@ public:
     GridGraph gridGraph;
     vector<GRNet> nets;
     
-    void separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices, int threshold) const;
+    void separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const;
     void sortNetIndices(vector<int>& netIndices) const;
-    void getGuides(const GRNet& net, vector<std::pair<int, utils::BoxT<int>>>& guides) ;
     void printStatistics() const;
 };

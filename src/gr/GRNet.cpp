@@ -28,3 +28,24 @@ GRNet::GRNet(const Net& baseNet, const Design& design, const GridGraph& gridGrap
         }
     }
 }
+
+void GRNet::getGuides() {
+    if (!routingTree)
+        return;
+    GRTreeNode::preorder(routingTree, [&](std::shared_ptr<GRTreeNode> node) {
+        for (const auto& child : node->children) {
+            if(node->x == child->x && node->y == child->y && node->layerIdx == child->layerIdx){
+                continue;
+            }
+            vector<int> vec;
+            vec.reserve(6);
+            vec.emplace_back(min(node->x, child->x));
+            vec.emplace_back(min(node->y, child->y));
+            vec.emplace_back(min(node->layerIdx, child->layerIdx));
+            vec.emplace_back(max(node->x, child->x));
+            vec.emplace_back(max(node->y, child->y));
+            vec.emplace_back(max(node->layerIdx, child->layerIdx));
+            guide.push_back(vec);
+        }
+    });
+}

@@ -10,6 +10,7 @@
 #include "layer.h"
 #include "metrics.h"
 #include "netlist.h"
+#include <chrono>
 
 using namespace std;
 
@@ -17,8 +18,12 @@ class Design {
    public:
     Design(const Parameters& params)
         : parameters(params) {
+        auto t = std::chrono::high_resolution_clock::now();
         readCap(params.cap_file);
+        cout << "USED TIME FOR READCAP:" <<  std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count() << std::endl;
+        t = std::chrono::high_resolution_clock::now();
         readNet(params.net_file);
+        cout << "USED TIME FOR READNET:" <<  std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count() << std::endl;
     }
     ~Design();
 

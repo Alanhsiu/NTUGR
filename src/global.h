@@ -35,7 +35,7 @@ struct Parameters {
     std::string cap_file;
     std::string net_file;
     std::string out_file;
-    int threads = 4;
+    int threads = 8;
 
     const int min_routing_layer = 1;
     const double max_detour_ratio = 0.25;

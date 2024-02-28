@@ -12,6 +12,54 @@ using namespace std;
 
 Design::~Design() {
 }
+/*
+bool Design::readCap(const string& filename) {
+    FILE* inputFile = fopen(filename.c_str(), "r");
+    char line[1000];
+    if (inputFile == NULL) {
+        printf("Error opening file.\n");
+        return false;
+    }
+    fscanf(inputFile, "%d %d %d", &dimension.n_layers, &dimension.x_size, &dimension.y_size);
+    // fgets(line, sizeof(line), inputFile)
+    fscanf(inputFile, "%lf %lf", &metrics.UnitLengthWireCost, &metrics.UnitViaCost);
+    double OFWeight;
+    metrics.OFWeight.resize(dimension.n_layers);
+    for (int i = 0; i < dimension.n_layers; i++) {
+        fscanf(inputFile, "%lf", &OFWeight);
+        metrics.OFWeight.emplace_back(OFWeight);
+    }
+    dimension.hEdge.resize(dimension.x_size);
+    int hEdge;
+    for (int i = 0; i < dimension.x_size-1; i++) {
+        fscanf(inputFile, "%d", &hEdge);
+        dimension.hEdge.emplace_back(hEdge);
+    }
+    dimension.vEdge.resize(dimension.y_size);
+    int vEdge;
+    for (int i = 0; i < dimension.y_size-1; i++) {
+        fscanf(inputFile, "%d", &vEdge);
+        dimension.vEdge.emplace_back(vEdge);
+    }
+    char name[1000];
+    for (int i = 0; i < dimension.n_layers; i++) {
+        Layer layer;
+        layer.id = i;
+        fscanf(inputFile, "%s %d %lf", name, &layer.direction, &layer.minLength);
+        vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
+        for (int i = 0; i < dimension.y_size; i++) {
+            for (int j = 0; j < dimension.x_size; j++) {
+                fscanf(inputFile, "%lf", &cap[i][j]);
+            }
+        }
+        layer.capacity = cap;
+        layers.push_back(layer);
+    }
+    fclose(inputFile);
+    return true;
+    
+}
+*/
 
 bool Design::readCap(const string& filename) {
     ifstream inputFile(filename);
@@ -76,73 +124,6 @@ bool Design::readCap(const string& filename) {
     return true;
 }
 
-bool Design::readNet(const string& filename) {
-    ifstream inputFile(filename);
-    if (!inputFile.is_open()) {
-        cerr << "Error opening the file." << '\n';
-        return false;
-    }
-
-    vector<Net> nets;
-    vector<Pin> pins;
-    vector<Point> points;
-
-    string line;
-    string net_name;
-
-    int net_id = 0;
-    int pin_id = 0;
-    int point_id = 0;
-
-    while (getline(inputFile, line)) {
-        net_name = line;
-        Net net(net_id++, net_name);
-        vector<int> pin_ids;
-
-        getline(inputFile, line);  // consumes the "("
-        while (getline(inputFile, line)) {
-            if (line == ")")
-                break;  // end of net
-
-            Pin pin(pin_id++, net_id);
-            vector<int> point_ids;
-
-            // Remove square brackets
-            line.erase(remove(line.begin(), line.end(), '['), line.end());
-            line.erase(remove(line.begin(), line.end(), ']'), line.end());
-            istringstream iss(line);
-            char comma;  // To handle commas between tuple elements
-
-            while (!iss.eof()) {
-                int layer, x, y;
-                iss.ignore(1, '(');
-                iss >> layer >> ws >> comma >> ws >> x >> ws >> comma >> ws >> y;
-                iss.ignore(1, ')');
-                iss >> comma >> ws;
-                Point point(point_id++, net_id, layer, x, y);
-                point_ids.push_back(point.id);
-                points.emplace_back(point);
-            }
-
-            pin.point_ids = point_ids;
-            pin_ids.push_back(pin.id);
-            pins.emplace_back(pin);
-        }
-        net.pin_ids = pin_ids;
-        nets.emplace_back(net);
-    }
-
-    netlist.n_nets = nets.size();
-    netlist.n_pins = pins.size();
-    netlist.n_points = points.size();
-    netlist.nets = nets;
-    netlist.pins = pins;
-    netlist.points = points;
-
-    return true;
-}
-/*
-
 void replaceChars(char *str) {
     while (*str != '\0') {
         if (*str == '[' || *str == ']' || *str == '(' || *str == ')' || *str == ',') {
@@ -171,8 +152,7 @@ bool Design::readNet(const string& filename) {
         return false;
     }
     while (fgets(line, sizeof(line), inputFile)){
-        sscanf(line, "%s", inputFile);
-        string str(net_name);
+        string str(line);
         Net net(net_id++, str);
         vector<int> pin_ids;
         fgets(line, sizeof(line), inputFile); // consumes the "("
@@ -184,9 +164,22 @@ bool Design::readNet(const string& filename) {
             Pin pin(pin_id++, net_id);
             vector<int> point_ids;
             replaceChars(line);
-            while(scanf("%d", &layer) == 1){
-                scanf("%d", &x);
-                scanf("%d", &y);
+            char *token = strtok(line, " \t\n");
+            while (token != NULL) {
+                layer = atoi(token);
+                token = strtok(NULL, " \t\n");
+                if (token != NULL) {
+                    x = atoi(token);
+                    token = strtok(NULL, " \t\n");
+                } else {
+                    break; 
+                }
+                if (token != NULL) {
+                    y = atoi(token);
+                    token = strtok(NULL, " \t\n");
+                } else {
+                    break;
+                }
                 Point point(point_id++, net_id, layer, x, y);
                 point_ids.push_back(point.id);
                 points.emplace_back(point);
@@ -205,7 +198,6 @@ bool Design::readNet(const string& filename) {
     netlist.nets = nets;
     netlist.pins = pins;
     netlist.points = points;
-
+    fclose(inputFile);
     return true;
 }
-*/

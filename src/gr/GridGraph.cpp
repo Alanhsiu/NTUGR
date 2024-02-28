@@ -47,17 +47,6 @@ GridGraph::GridGraph(const Design& design, const Parameters& params)
     }
 }
 
-// utils::BoxT<DBU> GridGraph::getCellBox(utils::PointT<int> point) const {
-//     return {
-//         getGridline(0, point.x), getGridline(1, point.y),
-//         getGridline(0, point.x + 1), getGridline(1, point.y + 1)
-//     };
-// }
-
-// utils::BoxT<int> GridGraph::rangeSearchCells(const utils::BoxT<DBU>& box) const {
-//     return {rangeSearchRows(0, box[0]), rangeSearchRows(1, box[1])};
-// }
-
 DBU GridGraph::getEdgeLength(unsigned direction, unsigned edgeIndex) const {
     return direction == 0 ? hEdge[edgeIndex] : vEdge[edgeIndex];
     // return gridCenters[direction][edgeIndex];
@@ -248,15 +237,6 @@ bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int
     }
     // stage == 1
     return getEdge(layerIndex, x, y).getResource() < -2;
-    
-    // if(stage == 3){
-    //     return getEdge(layerIndex, x, y).getResource() < -2;
-    // }
-    // else if(stage == 2){
-    //     return getEdge(layerIndex, x, y).getResource() < -1;
-    // }
-    // // stage == 1
-    // return getEdge(layerIndex, x, y).getResource() < 0;
 }
 
 
