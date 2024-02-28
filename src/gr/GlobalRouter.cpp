@@ -29,6 +29,8 @@ void GlobalRouter::route() {
     PatternRoute::readFluteLUT();
     cout << "stage 1: pattern routing" << std::endl;
 
+
+
     int threadNum = parameters.threads;
     int k = 8;  // ratio can be adjusted
     vector<vector<int>> nonoverlapNetIndices;
@@ -43,15 +45,15 @@ void GlobalRouter::route() {
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
-    for (int i = 0; i < nonoverlapNetIndices[threadNum].size() / k; ++i) {
-        int netIndex = nonoverlapNetIndices[threadNum][i];
-        PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
-        patternRoute.constructSteinerTree();
-        patternRoute.constructRoutingDAG();
-        patternRoute.run();
-        std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
-        gridGraph.commitTree(tree);
-    }
+    // for (int i = 0; i < nonoverlapNetIndices[threadNum].size(); ++i) {
+    //     int netIndex = nonoverlapNetIndices[threadNum][i];
+    //     PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
+    //     patternRoute.constructSteinerTree();
+    //     patternRoute.constructRoutingDAG();
+    //     patternRoute.run();
+    //     std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
+    //     gridGraph.commitTree(tree);
+    // }
 
     omp_lock_t lock;
     omp_init_lock(&lock);
@@ -72,9 +74,9 @@ void GlobalRouter::route() {
     }
     auto t1 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
     cout << "parallel for time elapsed: " << t1 << std::endl;
-    auto t_1 = std::chrono::high_resolution_clock::now();
+    t = std::chrono::high_resolution_clock::now();
 
-    for (int i = nonoverlapNetIndices[threadNum].size() / k; i < nonoverlapNetIndices[threadNum].size(); ++i) {
+    for (int i = 0; i < nonoverlapNetIndices[threadNum].size(); ++i) {
         int netIndex = nonoverlapNetIndices[threadNum][i];
         PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
         patternRoute.constructSteinerTree();
@@ -83,8 +85,9 @@ void GlobalRouter::route() {
         std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
         gridGraph.commitTree(tree);
     }
-    auto t2 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t_1).count();
+    auto t2 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
     cout << "non-parallel for time elapsed: " << t2 << std::endl;
+    t = std::chrono::high_resolution_clock::now();
 
     netIndices.clear();
     for (const auto& net : nets) {
@@ -94,18 +97,8 @@ void GlobalRouter::route() {
     }
     cout << netIndices.size() << " / " << nets.size() << " nets have overflows." << std::endl;
 
-    // t1 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
-    t = std::chrono::high_resolution_clock::now();
-
-    // cout << "stage 1 time elapsed: " << t1 << std::endl;
-
-    // for (const auto& netidx : netIndices)
-    //     if(nets[netidx].name == "tcdm_slave_northeast_resp_o[12]")
-    //         cout << "===== start stage 2 =====" << std::endl;
-
     // Stage 2: Pattern routing with possible detours
-    bool stage2 = true;
-    if(stage2){
+    if(parameters.stage2){
         n2 = netIndices.size();
         if (netIndices.size() > 0) {
             cout << "stage 2: pattern routing with possible detours" << std::endl;
@@ -126,22 +119,16 @@ void GlobalRouter::route() {
 
             netIndices.clear();
             for (const auto& net : nets) {
-                // if(net.name == "tcdm_slave_east_req_ready_o")
-                //     cout << "id: " << net.getIndex() << " debug3" << std::endl;
                 if (gridGraph.checkOverflow(net.getRoutingTree(), 2) > 0) {
                     netIndices.push_back(net.getIndex());
                 }
             }
             cout << netIndices.size() << " / " << nets.size() << " nets have overflows." << std::endl;
         }
-        t2 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
-        // t = std::chrono::high_resolution_clock::now();
-
-        cout << "stage 2 time elapsed: " << t2 << std::endl;
+        auto t3 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
+        cout << "stage 2 time elapsed: " << t3 << std::endl;
+        t = std::chrono::high_resolution_clock::now();
     }
-    // for (const auto& netidx : netIndices)
-    //     if(nets[netidx].name == "tcdm_slave_east_req_ready_o")
-    //         cout << "===== start stage 3 =====" << std::endl;
 
     // // Stage 3: maze routing on sparsified routing graph
     // n3 = netIndices.size();
@@ -342,7 +329,7 @@ void GlobalRouter::write(std::string guide_file) {
     FILE* out;
     out = fopen(guide_file.c_str(), "w");
     for (const GRNet& net : nets) {
-        fprintf(out, "%s(\n", net.getName().c_str());
+        fprintf(out, "%s\n(\n", net.getName().c_str());
         for (const auto& g : net.guide) {
             fprintf(out, "%d %d %d %d %d %d\n",
                 g[0], g[1], g[2], g[3], g[4], g[5]

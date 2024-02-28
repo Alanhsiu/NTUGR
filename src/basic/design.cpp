@@ -12,7 +12,7 @@ using namespace std;
 
 Design::~Design() {
 }
-/*
+
 bool Design::readCap(const string& filename) {
     FILE* inputFile = fopen(filename.c_str(), "r");
     char line[1000];
@@ -24,18 +24,18 @@ bool Design::readCap(const string& filename) {
     // fgets(line, sizeof(line), inputFile)
     fscanf(inputFile, "%lf %lf", &metrics.UnitLengthWireCost, &metrics.UnitViaCost);
     double OFWeight;
-    metrics.OFWeight.resize(dimension.n_layers);
+    metrics.OFWeight.reserve(dimension.n_layers);
     for (int i = 0; i < dimension.n_layers; i++) {
         fscanf(inputFile, "%lf", &OFWeight);
         metrics.OFWeight.emplace_back(OFWeight);
     }
-    dimension.hEdge.resize(dimension.x_size);
+    dimension.hEdge.reserve(dimension.x_size);
     int hEdge;
     for (int i = 0; i < dimension.x_size-1; i++) {
         fscanf(inputFile, "%d", &hEdge);
         dimension.hEdge.emplace_back(hEdge);
     }
-    dimension.vEdge.resize(dimension.y_size);
+    dimension.vEdge.reserve(dimension.y_size);
     int vEdge;
     for (int i = 0; i < dimension.y_size-1; i++) {
         fscanf(inputFile, "%d", &vEdge);
@@ -56,71 +56,6 @@ bool Design::readCap(const string& filename) {
         layers.push_back(layer);
     }
     fclose(inputFile);
-    return true;
-    
-}
-*/
-
-bool Design::readCap(const string& filename) {
-    ifstream inputFile(filename);
-    if (!inputFile.is_open()) {
-        cerr << "Error opening the file." << '\n';
-        return false;
-    }
-    string line;
-    // nLayers, xSize, ySize
-    getline(inputFile, line);
-    istringstream iss1(line);
-    iss1 >> dimension.n_layers >> dimension.x_size >> dimension.y_size;
-    // cost
-    getline(inputFile, line);
-    istringstream iss2(line);
-    iss2 >> metrics.UnitLengthWireCost >> metrics.UnitViaCost;
-    double OFWeight;
-    // metrics.OFWeight.resize(dimension.n_layers);
-    for (int i = 0; i < dimension.n_layers; i++) {
-        iss2 >> OFWeight;
-        metrics.OFWeight.emplace_back(OFWeight);
-    }
-    // x step sizes
-    // dimension.hEdge.resize(dimension.x_size);
-    getline(inputFile, line);
-    istringstream iss3(line);
-    int hEdge;
-    for (int i = 0; i < dimension.x_size-1; i++) {
-        iss3 >> hEdge;
-        dimension.hEdge.emplace_back(hEdge);
-    }
-    // y step sizes
-    // dimension.vEdge.resize(dimension.y_size);
-    getline(inputFile, line);
-    istringstream iss4(line);
-    int vEdge;
-    for (int i = 0; i < dimension.y_size-1; i++) {
-        iss4 >> vEdge;
-        dimension.vEdge.emplace_back(vEdge);
-    }
-
-    // capacity
-    string name;
-    for (int i = 0; i < dimension.n_layers; i++) {
-        Layer layer;
-        layer.id = i;
-        getline(inputFile, line);
-        istringstream iss(line);
-        iss >> name >> layer.direction >> layer.minLength;
-        layer.minLength = layer.minLength;
-        vector<vector<double>> cap(dimension.y_size, vector<double>(dimension.x_size, 0));
-        for (int i = 0; i < dimension.y_size; i++) {
-            getline(inputFile, line);
-            istringstream iss(line);
-            for (int j = 0; j < dimension.x_size; j++) {
-                iss >> cap[i][j];
-            }
-        }
-        layer.capacity = cap;
-        layers.push_back(layer);
-    }
     return true;
 }
 
@@ -152,6 +87,8 @@ bool Design::readNet(const string& filename) {
         return false;
     }
     while (fgets(line, sizeof(line), inputFile)){
+        size_t ln = strlen(line) - 1;
+        if (line[ln] == '\n') line[ln] = '\0';
         string str(line);
         Net net(net_id++, str);
         vector<int> pin_ids;

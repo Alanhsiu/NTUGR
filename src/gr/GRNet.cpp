@@ -35,6 +35,7 @@ void GRNet::getGuides() {
     GRTreeNode::preorder(routingTree, [&](std::shared_ptr<GRTreeNode> node) {
         for (const auto& child : node->children) {
             if(node->x == child->x && node->y == child->y && node->layerIdx == child->layerIdx){
+                cout << "Warning: node and child are the same" << endl;
                 continue;
             }
             vector<int> vec;

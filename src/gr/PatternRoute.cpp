@@ -416,14 +416,20 @@ void PatternRoute::getAllAccessPoints() {
 void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
     if (node->children.size() == 0) {
         // check if the node is an access point
+        int maxlayer = -1;
         for (auto &accessPoint : allAccessPoints) {
             if (accessPoint.x == node->x && accessPoint.y == node->y && accessPoint.layerIdx == node->layerIdx) {
                 return;
             }
             if (accessPoint.x == node->x && accessPoint.y == node->y){
-                node->layerIdx = accessPoint.layerIdx;
-                return;
+                // node->layerIdx = accessPoint.layerIdx;
+                // return;
+                maxlayer = max(accessPoint.layerIdx, maxlayer);
             }
+        }
+        if(maxlayer != -1){
+            node->layerIdx = maxlayer;
+            return;
         }
         // if not, remove the node
         node = nullptr;
@@ -452,9 +458,9 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
 void PatternRoute::run() {
     calculateRoutingCosts(routingDag);
     // net.setRoutingTree(getRoutingTree(routingDag));
-    if (net.name == "dma_req_i[30]") {
-        printf("run");
-    }
+    // if(net.name == "dma_req_i[30]"){
+    //     printf("run");
+    // }
     std::shared_ptr<GRTreeNode> routingTree = getRoutingTree(routingDag);
 
     // prune the tree
