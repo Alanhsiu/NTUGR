@@ -58,5 +58,5 @@ void GRNet::getGuides() {
         }
         guide_string += "\n";
     }
-    guide_string += "\n)\n";
+    guide_string += ")\n";
 }

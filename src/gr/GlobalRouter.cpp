@@ -6,11 +6,37 @@
 
 GlobalRouter::GlobalRouter(const Design& design, const Parameters& params)
     : gridGraph(design, params), parameters(params) {
-    // Instantiate the global routing netlist
-    const vector<Net>& baseNets = design.netlist.nets;
-    nets.reserve(baseNets.size());
-    for (const Net& baseNet : baseNets) {
-        nets.emplace_back(baseNet, design, gridGraph);  // GRNet(baseNet, design, gridGraph)
+    // // Instantiate the global routing netlist
+    // const vector<Net>& baseNets = design.netlist.nets;
+    // nets.reserve(baseNets.size());
+    // for (const Net& baseNet : baseNets) {
+    //     nets.emplace_back(baseNet, design, gridGraph);  // GRNet(baseNet, design, gridGraph)
+    // }
+    const size_t numNets = design.netlist.nets.size();
+    nets.reserve(numNets);
+    for (const Net& baseNet : design.netlist.nets) {
+        nets.emplace_back(baseNet, design, gridGraph);
+    }
+}
+
+#include <unistd.h>
+void monitorMemoryUsage() {
+    // 取得目前進程 ID
+    pid_t pid = getpid();
+
+    // 構建 /proc/<pid>/status 檔案的路徑
+    std::string statusFilePath = "/proc/" + std::to_string(pid) + "/status";
+
+    // 開啟 /proc/<pid>/status 檔案
+    std::ifstream statusFile(statusFilePath);
+    std::string line;
+
+    // 在檔案中尋找 VmRSS（實際使用的記憶體量）
+    while (std::getline(statusFile, line)) {
+        if (line.find("VmRSS") != std::string::npos) {
+            std::cout << "Memory usage: " << line << std::endl;
+            break;
+        }
     }
 }
 
@@ -20,7 +46,7 @@ void GlobalRouter::route() {
     auto start = std::chrono::high_resolution_clock::now();
 
     vector<int> netIndices;
-    netIndices.reserve(nets.size()); 
+    netIndices.reserve(nets.size());
     for (const auto& net : nets)
         netIndices.emplace_back(net.getIndex());
     // int overflowThreshold = (nets.size() < 150000) ? 0 : -10;
@@ -33,7 +59,7 @@ void GlobalRouter::route() {
     // }
     int overflowThreshold = (nets.size() < 1000000) ? -4 : -10;
     cout << "nets size: " << nets.size() << ", overflowThreshold: " << overflowThreshold << std::endl;
-
+monitorMemoryUsage();
     // Stage 1: Pattern routing
     n1 = netIndices.size();
     PatternRoute::readFluteLUT();
@@ -44,14 +70,14 @@ void GlobalRouter::route() {
     nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
 
     /* Separate 1 */
-    separateNetIndices(netIndices, nonoverlapNetIndices);
+    separateNetIndices3(netIndices, nonoverlapNetIndices);
 #pragma omp parallel for
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
         sortNetIndices(nonoverlapNetIndices[i]);
     }
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
-
+monitorMemoryUsage();
     /* Non-parallel 1 */
     int k = nonoverlapNetIndices[threadNum].size() / 2;
     for (int i = 0; i < k; ++i) {
@@ -65,8 +91,7 @@ void GlobalRouter::route() {
     }
     cout << "non-parallel for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
     start = std::chrono::high_resolution_clock::now();
-
-
+monitorMemoryUsage();
     /* Parallel 1 */
     omp_lock_t lock;
     omp_init_lock(&lock);
@@ -87,7 +112,7 @@ void GlobalRouter::route() {
     }
     cout << "parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
     start = std::chrono::high_resolution_clock::now();
-
+monitorMemoryUsage();
     /* Non-parallel 1 */
     for (int i = k; i < nonoverlapNetIndices[threadNum].size(); ++i) {
         int netIndex = nonoverlapNetIndices[threadNum][i];
@@ -116,18 +141,18 @@ void GlobalRouter::route() {
         cout << "stage 2: pattern routing with possible detours" << std::endl;
         GridGraphView<bool> congestionView;  // (2d) direction -> x -> y -> has overflow?
         gridGraph.extractCongestionView(congestionView);
-
+monitorMemoryUsage();
         /* Separate 2 */
         vector<vector<int>> nonoverlapNetIndices;
         nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
-        separateNetIndices3(netIndices, nonoverlapNetIndices);
+        separateNetIndices(netIndices, nonoverlapNetIndices);
 #pragma omp parallel for
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
             sortNetIndices(nonoverlapNetIndices[i]);
         }
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
             cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
-
+monitorMemoryUsage();
         /* Parallel 1 */
         omp_lock_t lock2;
         omp_init_lock(&lock2);
@@ -150,7 +175,7 @@ void GlobalRouter::route() {
         }
         cout << "parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
         start = std::chrono::high_resolution_clock::now();
-
+monitorMemoryUsage();
         /* Non-parallel 1 */
         for (int i = 0; i < nonoverlapNetIndices[threadNum].size(); ++i) {
             int netIndex = nonoverlapNetIndices[threadNum][i];
@@ -411,7 +436,7 @@ void GlobalRouter::printStatistics() const {
 void write_partial_file(const std::vector<GRNet>& nets_subset, const std::string& temp_filename) {
     std::ofstream out(temp_filename);
     for (const GRNet& net : nets_subset) {
-        out << net.guide_string << "\n";
+        out << net.guide_string;
     }
 }
 
@@ -444,6 +469,56 @@ void parallel_write_to_file(const std::vector<GRNet>& nets, const std::string& g
     }
 }
 
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <thread>
+#include <vector>
+
+// 假設GRNet已經被定義，並且有一個成員變量guide_string
+
+void write_subset_to_file(const std::vector<GRNet>& subset, const std::string& filename) {
+    std::ofstream out(filename);
+    for (const auto& net : subset) {
+        out << net.guide_string;
+    }
+}
+
+void parallel_write_and_merge(const std::vector<GRNet>& nets, const std::string& final_filename, int num_threads) {
+    std::vector<std::thread> threads;
+    std::vector<std::string> temp_filenames(num_threads);
+
+    // 分割 nets 到多個子集並且平行寫入到臨時檔案
+    int subset_size = nets.size() / num_threads;
+    for (int i = 0; i < num_threads; ++i) {
+        int start = i * subset_size;
+        int end = (i + 1) == num_threads ? nets.size() : (i + 1) * subset_size;
+        temp_filenames[i] = "temp_" + std::to_string(i) + ".txt";
+        std::vector<GRNet> subset(nets.begin() + start, nets.begin() + end);
+        threads.push_back(std::thread(write_subset_to_file, subset, temp_filenames[i]));
+    }
+
+    // 等待所有線程完成
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    // 合併臨時檔案到最終檔案，使用更大的緩衝區
+    std::ofstream final_out(final_filename, std::ios::binary);
+    const size_t buffer_size = 1048576;  // 1MB
+    std::vector<char> buffer(buffer_size);
+    for (const auto& temp_filename : temp_filenames) {
+        std::ifstream temp_in(temp_filename, std::ios::binary);
+        while (temp_in.read(buffer.data(), buffer.size())) {
+            final_out.write(buffer.data(), temp_in.gcount());
+        }
+        if (temp_in.gcount() > 0) {  // 確保最後一次讀取的數據被寫入
+            final_out.write(buffer.data(), temp_in.gcount());
+        }
+        std::remove(temp_filename.c_str());  // 刪除臨時文件
+    }
+}
+
 void GlobalRouter::write(std::string guide_file) {
     cout << "generating route guides..." << std::endl;
     if (guide_file == "")
@@ -457,27 +532,17 @@ void GlobalRouter::write(std::string guide_file) {
     }
     cout << "Elapsed time for getGuides: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << " s" << endl;
 
-    // FILE* out;
-    // out = fopen(guide_file.c_str(), "w");
-    // for (const GRNet& net : nets) {
-    //     fprintf(out, "%s\n(\n", net.getName().c_str());
-    //     for (const auto& g : net.guide) {
-    //         fprintf(out, "%d %d %d %d %d %d\n",
-    //                 g[0], g[1], g[2], g[3], g[4], g[5]);
-    //     }
-    //     fprintf(out, ")\n");
-    // }
-
     FILE* out;
     out = fopen(guide_file.c_str(), "w");
     for (const GRNet& net : nets) {
-        fprintf(out, "%s\n", net.guide_string.c_str());
+        fprintf(out, "%s", net.guide_string.c_str());
     }
+    fclose(out);
 
-    // parallel_write_to_file(nets, guide_file, parameters.threads);
+    // parallel_write_to_file(nets, guide_file, parameters.threads); // -> 變很久
+
+    // parallel_write_and_merge(nets, guide_file, 8); // -> 變很久
 
     cout << std::endl;
-    // cout << "writing output..." << std::endl;
-    fclose(out);
     cout << "finished writing output..." << std::endl;
 }
