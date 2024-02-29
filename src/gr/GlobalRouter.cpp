@@ -35,7 +35,7 @@ void GlobalRouter::route() {
     nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
 
     /* Separate 1 */
-    separateNetIndices3(netIndices, nonoverlapNetIndices);
+    separateNetIndices(netIndices, nonoverlapNetIndices);
 #pragma omp parallel for
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
         sortNetIndices(nonoverlapNetIndices[i]);
@@ -79,39 +79,6 @@ void GlobalRouter::route() {
     cout << "parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
     start = std::chrono::high_resolution_clock::now();
 
-    /* Parallel 2 */
-    //     netIndices.clear();
-    //     netIndices.reserve(nonoverlapNetIndices[threadNum].size());
-    //     for (int i = 0; i < nonoverlapNetIndices[threadNum].size(); ++i) {
-    //         netIndices.push_back(nonoverlapNetIndices[threadNum][i]);
-    //     }
-    //     nonoverlapNetIndices[threadNum].clear();
-    //     separateNetIndices(netIndices, nonoverlapNetIndices);
-
-    // #pragma omp parallel for
-    //     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
-    //         sortNetIndices(nonoverlapNetIndices[i]);
-    //     }
-    //     for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
-    //         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
-
-    // #pragma omp parallel for
-    //     for (int i = 0; i < threadNum; ++i) {
-    //         for (int j = 0; j < nonoverlapNetIndices[i].size(); ++j) {
-    //             int netIndex = nonoverlapNetIndices[i][j];
-    //             PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
-    //             omp_set_lock(&lock);
-    //             patternRoute.constructSteinerTree();
-    //             omp_unset_lock(&lock);
-    //             patternRoute.constructRoutingDAG();
-    //             patternRoute.run();
-    //             std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
-    //             gridGraph.commitTree(tree);
-    //         }
-    //     }
-    //     cout << "parallel 2 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-    //     start = std::chrono::high_resolution_clock::now();
-
     /* Non-parallel 1 */
     for (int i = k; i < nonoverlapNetIndices[threadNum].size(); ++i) {
         int netIndex = nonoverlapNetIndices[threadNum][i];
@@ -152,10 +119,10 @@ void GlobalRouter::route() {
         //     gridGraph.commitTree(net.getRoutingTree());
         // }
 
-        vector<vector<int>> nonoverlapNetIndices;
-        nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
 
         /* Separate 2 */
+        vector<vector<int>> nonoverlapNetIndices;
+        nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
         separateNetIndices3(netIndices, nonoverlapNetIndices);
 #pragma omp parallel for
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
@@ -164,26 +131,9 @@ void GlobalRouter::route() {
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
             cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
-        /* Non-parallel 1 */
-        // int k = 0;
-        int k = nonoverlapNetIndices[threadNum].size() / 2;
-        for (int i = 0; i < k; ++i) {
-            int netIndex = nonoverlapNetIndices[threadNum][i];
-            GRNet& net = nets[netIndex];
-            gridGraph.commitTree(net.getRoutingTree(), true);
-            PatternRoute patternRoute(net, gridGraph, parameters);
-            patternRoute.constructSteinerTree();
-            patternRoute.constructRoutingDAG();
-            patternRoute.constructDetours(congestionView);  // KEY DIFFERENCE compared to stage 1
-            patternRoute.run();
-            gridGraph.commitTree(net.getRoutingTree());
-        }
-        cout << "non-parallel for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-        start = std::chrono::high_resolution_clock::now();
-
         /* Parallel 1 */
-        omp_lock_t lock;
-        omp_init_lock(&lock);
+        omp_lock_t lock2;
+        omp_init_lock(&lock2);
 
 #pragma omp parallel for
         for (int i = 0; i < threadNum; ++i) {
@@ -192,7 +142,9 @@ void GlobalRouter::route() {
                 GRNet& net = nets[netIndex];
                 gridGraph.commitTree(net.getRoutingTree(), true);
                 PatternRoute patternRoute(net, gridGraph, parameters);
+                omp_set_lock(&lock2);
                 patternRoute.constructSteinerTree();
+                omp_unset_lock(&lock2);
                 patternRoute.constructRoutingDAG();
                 patternRoute.constructDetours(congestionView);  // KEY DIFFERENCE compared to stage 1
                 patternRoute.run();
@@ -203,7 +155,7 @@ void GlobalRouter::route() {
         start = std::chrono::high_resolution_clock::now();
 
         /* Non-parallel 1 */
-        for (int i = k; i < nonoverlapNetIndices[threadNum].size(); ++i) {
+        for (int i = 0; i < nonoverlapNetIndices[threadNum].size(); ++i) {
             int netIndex = nonoverlapNetIndices[threadNum][i];
             GRNet& net = nets[netIndex];
             gridGraph.commitTree(net.getRoutingTree(), true);

@@ -229,14 +229,8 @@ void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool r
 }
 
 bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int stage) const {
-    if(stage == 3){
-        return getEdge(layerIndex, x, y).getResource() < 0;
-    }
-    else if(stage == 2){
-        return getEdge(layerIndex, x, y).getResource() < -1;
-    }
-    // stage == 1
-    return getEdge(layerIndex, x, y).getResource() < -2;
+    // after stage 1
+    return getEdge(layerIndex, x, y).getResource() < -5;
 }
 
 
