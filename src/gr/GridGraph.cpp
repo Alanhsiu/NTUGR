@@ -228,47 +228,47 @@ void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool r
     });
 }
 
-bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int stage) const {
+bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int overflowThreshold) const {
     // after stage 1
-    return getEdge(layerIndex, x, y).getResource() < -5;
+    return getEdge(layerIndex, x, y).getResource() < overflowThreshold;
 }
 
 
-int GridGraph::checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v, int stage) const {
+int GridGraph::checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v, int overflowThreshold) const {
     int num = 0;
     unsigned direction = layerDirections[layerIndex];
     if (direction == 0) {
         assert(u.y == v.y);
         int l = min(u.x, v.x), h = max(u.x, v.x);
         for (int x = l; x < h; x++) {
-            if (checkOverflow_stage(layerIndex, x, u.y, stage))
+            if (checkOverflow_stage(layerIndex, x, u.y, overflowThreshold))
                 num++;
         }
     } else {
         assert(u.x == v.x);
         int l = min(u.y, v.y), h = max(u.y, v.y);
         for (int y = l; y < h; y++) {
-            if (checkOverflow_stage(layerIndex, u.x, y, stage))
+            if (checkOverflow_stage(layerIndex, u.x, y, overflowThreshold))
                 num++;
         }
     }
     return num;
 }
 
-int GridGraph::checkOverflow(const std::shared_ptr<GRTreeNode>& tree, int stage) const {
+int GridGraph::checkOverflow(const std::shared_ptr<GRTreeNode>& tree, int overflowThreshold) const {
     if (!tree)
         return 0;
     int num = 0;
     GRTreeNode::preorder(tree, [&](std::shared_ptr<GRTreeNode> node) {
         for (auto& child : node->children) {
             if (node->layerIdx == child->layerIdx) {
-                num += checkOverflow(node->layerIdx, (utils::PointT<int>)*node, (utils::PointT<int>)*child, stage);
+                num += checkOverflow(node->layerIdx, (utils::PointT<int>)*node, (utils::PointT<int>)*child, overflowThreshold);
             }
             else {
                 assert(node->x == child->x && node->y == child->y);
                 int maxLayerIndex = max(node->layerIdx, child->layerIdx);
                 for (int layerIdx = min(node->layerIdx, child->layerIdx) + 1; layerIdx < maxLayerIndex - 1; layerIdx++) {
-                    num += checkOverflow_stage(layerIdx, node->x, node->y, stage); 
+                    num += checkOverflow_stage(layerIdx, node->x, node->y, overflowThreshold); 
                 }
             }
         }

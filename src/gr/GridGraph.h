@@ -45,9 +45,9 @@ public:
     
     // Checks
     inline bool checkOverflow(const int layerIndex, const int x, const int y) const { return getEdge(layerIndex, x, y).getResource() < 0.0; }
-    bool checkOverflow_stage(const int layerIndex, const int x, const int y, const int stage) const;
-    int checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v, int stage) const; // Check wire overflow
-    int checkOverflow(const std::shared_ptr<GRTreeNode>& tree, int stage) const; // Check routing tree overflow (Only wires are checked)
+    bool checkOverflow_stage(const int layerIndex, const int x, const int y, const int overflowThreshold) const;
+    int checkOverflow(const int layerIndex, const utils::PointT<int> u, const utils::PointT<int> v, int overflowThreshold) const; // Check wire overflow
+    int checkOverflow(const std::shared_ptr<GRTreeNode>& tree, int overflowThreshold) const; // Check routing tree overflow (Only wires are checked)
     std::string getPythonString(const std::shared_ptr<GRTreeNode>& routingTree) const;
    
     // 2D maps
