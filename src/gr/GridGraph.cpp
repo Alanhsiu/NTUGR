@@ -85,47 +85,47 @@ CostT GridGraph::getWireCost(const int layerIndex, const utils::PointT<int> u, c
     return cost;
 }
 
-// CostT GridGraph::Cost(const int layerIndex, const utils::PointT<int> loc) const {
-//     assert(layerIndex + 1 < nLayers);
-//     CostT cost = UnitViaCost;
-//     // Estimated wire cost to satisfy min-area
-//     for (int l = layerIndex; l <= layerIndex + 1; l++) {
-//         unsigned direction = layerDirections[l]; // layer direction
-//         utils::PointT<int> lowerLoc = loc;
-//         lowerLoc[direction] -= 1;
-//         DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
-//         DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-//         // CapacitygetViaT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
-//         CapacityT demand = parameters.UnitViaDemand;
-//         if (lowerEdgeLength > 0)
-//             cost += getWireCost(l, lowerLoc, demand);
-//         if (higherEdgeLength > 0)
-//             cost += getWireCost(l, loc, demand);
-//     }
-//     return cost;
-// }
-
-
 CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) const {
     assert(layerIndex + 1 < nLayers);
-    // CostT cost = UnitViaCost;
-    CostT cost = 0;
+    CostT cost = UnitViaCost;
     // Estimated wire cost to satisfy min-area
-    // for (int l = layerIndex; l <= layerIndex + 1; l++) {
-    //     unsigned direction = layerDirections[l]; // layer direction
-    //     utils::PointT<int> lowerLoc = loc;
-    //     lowerLoc[direction] -= 1;
-    //     DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
-    //     DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-    //     // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
-    CapacityT demand = parameters.UnitViaDemand;
-    //     if (lowerEdgeLength > 0)
-    //         cost += getWireCost(l, lowerLoc, demand);
-    //     if (higherEdgeLength > 0)
-    cost += getWireCost(layerIndex, loc, demand);
-    // }
+    for (int l = layerIndex; l <= layerIndex + 1; l++) {
+        unsigned direction = layerDirections[l]; // layer direction
+        utils::PointT<int> lowerLoc = loc;
+        lowerLoc[direction] -= 1;
+        DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
+        DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
+        // CapacitygetViaT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+        CapacityT demand = parameters.UnitViaDemand;
+        if (lowerEdgeLength > 0)
+            cost += getWireCost(l, lowerLoc, demand);
+        if (higherEdgeLength > 0)
+            cost += getWireCost(l, loc, demand);
+    }
     return cost;
 }
+
+
+// CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) const {
+//     assert(layerIndex + 1 < nLayers);
+//     // CostT cost = UnitViaCost;
+//     CostT cost = 0;
+//     // Estimated wire cost to satisfy min-area
+//     // for (int l = layerIndex; l <= layerIndex + 1; l++) {
+//     //     unsigned direction = layerDirections[l]; // layer direction
+//     //     utils::PointT<int> lowerLoc = loc;
+//     //     lowerLoc[direction] -= 1;
+//     //     DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
+//     //     DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
+//     //     // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+//     CapacityT demand = parameters.UnitViaDemand;
+//     //     if (lowerEdgeLength > 0)
+//     //         cost += getWireCost(l, lowerLoc, demand);
+//     //     if (higherEdgeLength > 0)
+//     cost += getWireCost(layerIndex, loc, demand);
+//     // }
+//     return cost;
+// }
 
 void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_t, std::pair<utils::PointT<int>, utils::IntervalT<int>>>& selectedAccessPoints) const {
     selectedAccessPoints.clear();

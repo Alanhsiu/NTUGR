@@ -73,4 +73,4 @@ RUN pip install  dglgo -f https://data.dgl.ai/wheels-test/repo.html
 # WORKDIR /app
 # CMD ["python", "device.py"]
 
-COPY alpha/router /workspace/router
+COPY build/route /workspace/router/

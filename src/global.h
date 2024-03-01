@@ -36,12 +36,12 @@ struct Parameters {
     std::string net_file;
     std::string out_file;
     int threads = 4;
-    bool stage2 = false;
+    bool stage2 = true;
     bool stage3 = false;
 
     const int min_routing_layer = 1;
-    const double max_detour_ratio = 0.25; // may change
-    const int target_detour_count = 20; // may change
+    const double max_detour_ratio = 0.1; // may change
+    const int target_detour_count = 10; // may change
     const double via_multiplier = 1.5; // can change to 1.0, 1.5, 2.0 
 
     const double cost_logistic_slope1 = 1.5;
@@ -50,7 +50,7 @@ struct Parameters {
     // const bool write_heatmap = false;
 
     double UnitViaCost = 4.0; // have to be changed to the actual value
-    const double UnitViaDemand = 0.5; // magic number
+    const double UnitViaDemand = 0.2; // magic number
     
     // command: /evaluator $input_path/$data.cap $input_path/$data.net $output_path/$data.PR_output
     Parameters(int argc, char* argv[]) {

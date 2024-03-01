@@ -14,20 +14,20 @@ GlobalRouter::GlobalRouter(const Design& design, const Parameters& params)
     }
 }
 
-#include <unistd.h>
-void monitorMemoryUsage() {
-    pid_t pid = getpid();
-    std::string statusFilePath = "/proc/" + std::to_string(pid) + "/status";
-    std::ifstream statusFile(statusFilePath);
-    std::string line;
+// #include <unistd.h>
+// void monitorMemoryUsage() {
+//     pid_t pid = getpid();
+//     std::string statusFilePath = "/proc/" + std::to_string(pid) + "/status";
+//     std::ifstream statusFile(statusFilePath);
+//     std::string line;
 
-    while (std::getline(statusFile, line)) {
-        if (line.find("VmRSS") != std::string::npos) {
-            std::cout << "Memory usage: " << line << std::endl;
-            break;
-        }
-    }
-}
+//     while (std::getline(statusFile, line)) {
+//         if (line.find("VmRSS") != std::string::npos) {
+//             std::cout << "Memory usage: " << line << std::endl;
+//             break;
+//         }
+//     }
+// }
 
 void GlobalRouter::route() {
     int n1 = 0, n2 = 0, n3=0;  // for statistics
@@ -54,7 +54,7 @@ void GlobalRouter::route() {
 
     /* Separate 1 */
     separateNetIndices1(netIndices, nonoverlapNetIndices);
-// #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
         sortNetIndices(nonoverlapNetIndices[i]);
     }
@@ -80,7 +80,7 @@ void GlobalRouter::route() {
     omp_lock_t lock;
     omp_init_lock(&lock);
 
-// #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < threadNum; ++i) {
         for (int j = 0; j < nonoverlapNetIndices[i].size(); ++j) {
             int netIndex = nonoverlapNetIndices[i][j];
@@ -131,7 +131,7 @@ void GlobalRouter::route() {
         vector<vector<int>> nonoverlapNetIndices;
         nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
         separateNetIndices1(netIndices, nonoverlapNetIndices);
-// #pragma omp parallel for
+#pragma omp parallel for
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
             sortNetIndices(nonoverlapNetIndices[i]);
         }
@@ -142,7 +142,7 @@ void GlobalRouter::route() {
         omp_lock_t lock2;
         omp_init_lock(&lock2);
 
-// #pragma omp parallel for
+#pragma omp parallel for
         for (int i = 0; i < threadNum; ++i) {
             for (int j = 0; j < nonoverlapNetIndices[i].size(); ++j) {
                 int netIndex = nonoverlapNetIndices[i][j];
@@ -495,7 +495,7 @@ void GlobalRouter::write(std::string guide_file) {
 
     auto start = std::chrono::high_resolution_clock::now();
     int netSize = nets.size();
-// #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < netSize; i++) {
         nets[i].getGuides();
     }

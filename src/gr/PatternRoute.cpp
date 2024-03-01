@@ -582,10 +582,10 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
             if (layerIndex >= fixedLayers.high) {
                 // CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
                 CostT cost = 0;
-                if(layerIndex - lowLayerIndex >= 2){
-                    cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex + 1];
+                if(layerIndex - lowLayerIndex >= 3){
+                    cost = viaCosts[layerIndex - 1] - viaCosts[lowLayerIndex] - 2*parameters.UnitViaCost;
                 }
-                cost += (layerIndex - lowLayerIndex) * parameters.UnitViaCost;
+                // cost += (layerIndex - lowLayerIndex) * parameters.UnitViaCost;
                 assert(cost >= 0);
                 for (CostT childCost : minChildCosts)
                     cost += childCost;
