@@ -35,7 +35,7 @@ struct Parameters {
     std::string cap_file;
     std::string net_file;
     std::string out_file;
-    int threads = 4;
+    // int threads = 8;
     // bool stage2 = true;
     // bool stage3 = false;
 

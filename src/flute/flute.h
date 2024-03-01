@@ -29,10 +29,10 @@
 /*************************************/
 /* Internal Parameters and Functions */
 /*************************************/
-#define POWVFILE "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/POWV9.dat"
-#define POSTFILE "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/POST9.dat"  
-// #define POWVFILE "POWV9.dat"        // LUT for POWV (Wirelength Vector)
-// #define POSTFILE "POST9.dat"        // LUT for POST (Steiner Tree)
+// #define POWVFILE "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/POWV9.dat"
+// #define POSTFILE "/home/b09901066/ISPD-NTUEE/NTUGR/src/flute/POST9.dat"  
+#define POWVFILE "POWV9.dat"        // LUT for POWV (Wirelength Vector)
+#define POSTFILE "POST9.dat"        // LUT for POST (Steiner Tree)
 #define D 9                         // LUT is used for d <= D, D <= 9
 #define TAU(A) (8+1.3*(A))
 #define D1(A) (25+120/((A)*(A)))     // flute_mr is used for D1 < d <= D2

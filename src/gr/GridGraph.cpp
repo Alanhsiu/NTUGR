@@ -174,7 +174,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
     // Extend the fixed layers to 2 layers higher to facilitate track switching
     for (auto& accessPoint : selectedAccessPoints) {
         utils::IntervalT<int>& fixedLayers = accessPoint.second.second;
-        fixedLayers.high = min(fixedLayers.high + 2, (int)getNumLayers() - 1);
+        fixedLayers.high = min(fixedLayers.high + 1, (int)getNumLayers() - 1);
     }
 }
 

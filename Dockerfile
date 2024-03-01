@@ -73,4 +73,6 @@ RUN pip install  dglgo -f https://data.dgl.ai/wheels-test/repo.html
 # WORKDIR /app
 # CMD ["python", "device.py"]
 
+COPY src/flute/POST9.dat /workspace/router/
+COPY src/flute/POWV9.dat /workspace/router/
 COPY build/route /workspace/router/

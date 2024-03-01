@@ -53,11 +53,13 @@ void GlobalRouter::route() {
     PatternRoute::readFluteLUT();
     cout << "stage 1: pattern routing" << std::endl;
 
-    int threadNum = parameters.threads;
+    int threadNum = 4;
+    // int threadNum = parameters.threads;
     vector<vector<int>> nonoverlapNetIndices;
     nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
 
     /* Separate 1 */
+    // separateNetIndices(netIndices, nonoverlapNetIndices);
     separateNetIndices1(netIndices, nonoverlapNetIndices);
 #pragma omp parallel for
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
@@ -136,6 +138,7 @@ void GlobalRouter::route() {
         /* Separate 2 */
         vector<vector<int>> nonoverlapNetIndices;
         nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
+        // separateNetIndices(netIndices, nonoverlapNetIndices);
         separateNetIndices1(netIndices, nonoverlapNetIndices);
 #pragma omp parallel for
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
