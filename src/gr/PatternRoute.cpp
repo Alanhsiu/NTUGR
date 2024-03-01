@@ -453,12 +453,55 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
     }
 }
 
+/*
+void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node, std::shared_ptr<GRTreeNode> &parent) {
+    if (node->children.size() == 0) {
+        // check if the node is an access point
+        int maxlayer = -1;
+        for (auto &accessPoint : allAccessPoints) {
+            if (accessPoint.x == node->x && accessPoint.y == node->y && accessPoint.layerIdx == node->layerIdx) {
+                return;
+            }
+            if (accessPoint.x == node->x && accessPoint.y == node->y){
+                // node->layerIdx = accessPoint.layerIdx;
+                // return;
+                if(accessPoint.layerIdx<=node->layerIndex)
+                maxlayer = max(accessPoint.layerIdx, maxlayer);
+            }
+        }
+        if(maxlayer != -1){
+            node->layerIdx = maxlayer;
+            return;
+        }
+        // if not, remove the node
+        node = nullptr;
+        return;
+
+    } else {
+        for (int i = node->children.size() - 1; i >= 0; i--) {
+            pruneRoutingTree(node->children[i], node);
+            bool same = (node->x == node->children[i]->x) && (node->y == node->children[i]->y) && (node->layerIdx == node->children[i]->layerIdx);
+            
+            if (node->children[i] == nullptr) {
+                node->children.erase(node->children.begin() + i);
+            }
+            else if (same) { // remove the child and move its children to the parent
+                for (auto &child : node->children[i]->children) {
+                    node->children.push_back(child);
+                }
+                node->children.erase(node->children.begin() + i);
+            }
+        }
+    }
+}
+*/
+
 void PatternRoute::run() {
     calculateRoutingCosts(routingDag);
     // net.setRoutingTree(getRoutingTree(routingDag));
-    // if(net.name == "dma_req_i[30]"){
-    //     printf("run");
-    // }
+    if(net.name == "i_tile/gen_caches\\[0\\].i_snitch_icache/i_handler/n_526"){
+        printf("run");
+    }
     std::shared_ptr<GRTreeNode> routingTree = getRoutingTree(routingDag);
 
     // prune the tree
@@ -539,12 +582,10 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
             if (layerIndex >= fixedLayers.high) {
                 // CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
                 CostT cost = 0;
-                if(layerIndex - lowLayerIndex >= 3){
-                    cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex] - 2 * parameters.UnitViaCost;
+                if(layerIndex - lowLayerIndex >= 2){
+                    cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex + 1];
                 }
-                else{
-                    cost = 0;
-                }
+                cost += (layerIndex - lowLayerIndex) * parameters.UnitViaCost;
                 assert(cost >= 0);
                 for (CostT childCost : minChildCosts)
                     cost += childCost;

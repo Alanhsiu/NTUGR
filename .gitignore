@@ -7,3 +7,4 @@ example_output/
 .vscode/
 *.tar
 *.png
+output*

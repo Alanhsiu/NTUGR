@@ -9,7 +9,7 @@ set(GR_SOURCES
     GridGraph.cpp
     GRNet.cpp
     GRTree.cpp
-    # MazeRoute.cpp
+    MazeRoute.cpp
     PatternRoute.cpp
 )
 

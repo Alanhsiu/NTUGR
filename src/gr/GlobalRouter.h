@@ -16,6 +16,7 @@ public:
     vector<GRNet> nets;
     
     void separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const;
+    void separateNetIndices1(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const;
     void separateNetIndices2(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const;
     void separateNetIndices3(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const;
     void sortNetIndices(vector<int>& netIndices) const;

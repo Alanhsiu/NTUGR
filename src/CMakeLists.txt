@@ -8,7 +8,7 @@ project(NTUGR)
 
 # Set the default build type if not specified
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
 
 # Message
@@ -41,6 +41,10 @@ set_property(TARGET route PROPERTY CXX_STANDARD 17)
 # Include debug symbols in the Debug build
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   target_compile_options(route PRIVATE -g)
+endif()
+
+if(CMAKE_BUILD_TYPE MATCHES Release)
+  target_compile_options(route PRIVATE -O3 -march=native)
 endif()
 
 # Enable testing with CMake

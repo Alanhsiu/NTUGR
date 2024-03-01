@@ -51,12 +51,20 @@ void GRNet::getGuides() {
             guide.push_back(vec);
         }
     });
+    // check if the guide has same elements
+    unordered_set<string> guideSet;
     guide_string = name + "\n(\n";
     for (const auto& vec : guide) {
+        string temp;    
         for (const auto& i : vec) {
-            guide_string += to_string(i) + " ";
+            // guide_string += to_string(i) + " ";
+            temp += to_string(i) + " ";
         }
-        guide_string += "\n";
+        if (guideSet.find(temp) == guideSet.end()) {
+            guideSet.insert(temp);
+            guide_string += temp + "\n";
+        }
+        // guide_string += "\n";
     }
     guide_string += ")\n";
 }

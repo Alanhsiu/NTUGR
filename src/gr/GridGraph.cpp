@@ -65,7 +65,7 @@ CostT GridGraph::getWireCost(const int layerIndex, const utils::PointT<int> lowe
     const auto& edge = graphEdges[layerIndex][lower.x][lower.y];
     CostT cost = demandLength * UnitLengthWireCost;
     bool s = edge.capacity < 0.01;
-    cost += demandLength * logistic(edge.capacity - edge.demand, s);
+    cost += demandLength * logistic(edge.capacity - edge.demand, s) * OFWeight[layerIndex];
     return cost;
 }
 
@@ -85,23 +85,45 @@ CostT GridGraph::getWireCost(const int layerIndex, const utils::PointT<int> u, c
     return cost;
 }
 
+// CostT GridGraph::Cost(const int layerIndex, const utils::PointT<int> loc) const {
+//     assert(layerIndex + 1 < nLayers);
+//     CostT cost = UnitViaCost;
+//     // Estimated wire cost to satisfy min-area
+//     for (int l = layerIndex; l <= layerIndex + 1; l++) {
+//         unsigned direction = layerDirections[l]; // layer direction
+//         utils::PointT<int> lowerLoc = loc;
+//         lowerLoc[direction] -= 1;
+//         DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
+//         DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
+//         // CapacitygetViaT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+//         CapacityT demand = parameters.UnitViaDemand;
+//         if (lowerEdgeLength > 0)
+//             cost += getWireCost(l, lowerLoc, demand);
+//         if (higherEdgeLength > 0)
+//             cost += getWireCost(l, loc, demand);
+//     }
+//     return cost;
+// }
+
+
 CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) const {
     assert(layerIndex + 1 < nLayers);
-    CostT cost = UnitViaCost;
+    // CostT cost = UnitViaCost;
+    CostT cost = 0;
     // Estimated wire cost to satisfy min-area
-    for (int l = layerIndex; l <= layerIndex + 1; l++) {
-        unsigned direction = layerDirections[l];
-        utils::PointT<int> lowerLoc = loc;
-        lowerLoc[direction] -= 1;
-        DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
-        DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-        // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
-        CapacityT demand = parameters.UnitViaDemand;
-        if (lowerEdgeLength > 0)
-            cost += getWireCost(l, lowerLoc, demand);
-        if (higherEdgeLength > 0)
-            cost += getWireCost(l, loc, demand);
-    }
+    // for (int l = layerIndex; l <= layerIndex + 1; l++) {
+    //     unsigned direction = layerDirections[l]; // layer direction
+    //     utils::PointT<int> lowerLoc = loc;
+    //     lowerLoc[direction] -= 1;
+    //     DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
+    //     DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
+    //     // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
+    CapacityT demand = parameters.UnitViaDemand;
+    //     if (lowerEdgeLength > 0)
+    //         cost += getWireCost(l, lowerLoc, demand);
+    //     if (higherEdgeLength > 0)
+    cost += getWireCost(layerIndex, loc, demand);
+    // }
     return cost;
 }
 
@@ -228,9 +250,16 @@ void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool r
     });
 }
 
-bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int overflowThreshold) const {
+// bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int overflowThreshold) const {
+bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int stage) const {
     // after stage 1
-    return getEdge(layerIndex, x, y).getResource() < overflowThreshold;
+    // return getEdge(layerIndex, x, y).getResource() < overflowThreshold;
+
+    // if(stage==2){
+    //     return getEdge(layerIndex, x, y).getResource() < -10;
+    // }
+    // else
+        return getEdge(layerIndex, x, y).getResource() < -2;
 }
 
 

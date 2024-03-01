@@ -16,7 +16,7 @@ using namespace std;
 
 class Design {
    public:
-    Design(const Parameters& params)
+    Design(Parameters& params)
         : parameters(params) {
         auto t = std::chrono::high_resolution_clock::now();
         readCap(params.cap_file);
@@ -28,7 +28,7 @@ class Design {
     ~Design();
 
     // private:
-    const Parameters& parameters;
+    Parameters& parameters;
     // string name;
     NetList netlist;
     vector<Layer> layers;
