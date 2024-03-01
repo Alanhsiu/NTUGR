@@ -43,6 +43,11 @@ void GlobalRouter::route() {
     // overflowThreshold = (nets.size() > 10000000) ? -10 : overflowThreshold;
     cout << "nets size: " << nets.size() << ", overflowThreshold: " << overflowThreshold << std::endl;
 
+    bool stage2 = true;
+    bool stage3 = false;
+    // if(nets.size()<150000)
+    //     stage3 = true;
+
     // Stage 1: Pattern routing
     n1 = netIndices.size();
     PatternRoute::readFluteLUT();
@@ -62,8 +67,9 @@ void GlobalRouter::route() {
         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
     /* Non-parallel 1 */
-    // int k = 0;
-    int k = nonoverlapNetIndices[threadNum].size() / 2;
+    int k = 0;
+    // int k = nonoverlapNetIndices[threadNum].size() / 2;
+    // int k = nonoverlapNetIndices[threadNum].size();
     for (int i = 0; i < k; ++i) {
         int netIndex = nonoverlapNetIndices[threadNum][i];
         PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
@@ -121,7 +127,7 @@ void GlobalRouter::route() {
 
     // Stage 2: Pattern routing with possible detours
     auto t2 = std::chrono::high_resolution_clock::now();
-    if (parameters.stage2 && netIndices.size() > 0) {
+    if (stage2 && netIndices.size() > 0) {
         n2 = netIndices.size();
         cout << "stage 2: pattern routing with possible detours" << std::endl;
         GridGraphView<bool> congestionView;  // (2d) direction -> x -> y -> has overflow?
@@ -193,7 +199,7 @@ void GlobalRouter::route() {
     auto t3 = std::chrono::high_resolution_clock::now();
 
     n3 = netIndices.size();
-    if (parameters.stage3 && netIndices.size() > 0) {
+    if (stage3 && netIndices.size() > 0) {
         cout << "stage 3: maze routing on sparsified routing graph" << '\n';
         for (const int netIndex : netIndices) {
             GRNet& net = nets[netIndex];
@@ -202,7 +208,8 @@ void GlobalRouter::route() {
         GridGraphView<CostT> wireCostView;
         gridGraph.extractWireCostView(wireCostView);
         sortNetIndices(netIndices);
-        SparseGrid grid(10, 10, 0, 0);
+        SparseGrid grid(1, 1, 0, 0);
+        // SparseGrid grid(10, 10, 0, 0);
         for (const int netIndex : netIndices) {
             GRNet& net = nets[netIndex];
             // gridGraph.commitTree(net.getRoutingTree(), true);

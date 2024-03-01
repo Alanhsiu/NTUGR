@@ -36,8 +36,8 @@ struct Parameters {
     std::string net_file;
     std::string out_file;
     int threads = 4;
-    bool stage2 = true;
-    bool stage3 = false;
+    // bool stage2 = true;
+    // bool stage3 = false;
 
     const int min_routing_layer = 1;
     const double max_detour_ratio = 0.1; // may change
