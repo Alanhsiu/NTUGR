@@ -29,7 +29,6 @@ class Design {
 
     // private:
     Parameters& parameters;
-    // string name;
     NetList netlist;
     vector<Layer> layers;
     Dimension dimension;

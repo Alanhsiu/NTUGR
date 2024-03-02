@@ -18,7 +18,6 @@ public:
     void clearRoutingTree() { routingTree = nullptr; }
     void getGuides();
     
-    // vector<vector<int>> guide;
     string guide_string;
 
     int index;

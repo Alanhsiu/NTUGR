@@ -15,8 +15,8 @@ echo "Running ariane133_68"
 ./route -cap $input_path/ariane133_68.cap -net $input_path/ariane133_68.net -output $output_PR_path/ariane133_68.PR_output > $output_log_path/ariane133_68.log
 echo "Running ariane133_51"
 ./route -cap $input_path/ariane133_51.cap -net $input_path/ariane133_51.net -output $output_PR_path/ariane133_51.PR_output > $output_log_path/ariane133_51.log
-# echo "Running mempool_cluster"
-# ./route -cap $input_path/mempool_cluster.cap -net $input_path/mempool_cluster.net -output $output_PR_path/mempool_cluster.PR_output > $output_log_path/mempool_cluster.log
+echo "Running mempool_cluster"
+./route -cap $input_path/mempool_cluster.cap -net $input_path/mempool_cluster.net -output $output_PR_path/mempool_cluster.PR_output > $output_log_path/mempool_cluster.log
 # echo "Running mempool_cluster_large"
 # ./route -cap $input_path/mempool_cluster_large.cap -net $input_path/mempool_cluster_large.net -output $output_PR_path/mempool_cluster_large.PR_output > $output_log_path/mempool_cluster_large.log
 

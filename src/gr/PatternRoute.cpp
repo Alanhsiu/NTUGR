@@ -8,45 +8,6 @@ void SteinerTreeNode::preorder(
         preorder(child, visit);
 }
 
-// std::string SteinerTreeNode::getPythonString(std::shared_ptr<SteinerTreeNode> node) {
-//     vector<std::pair<utils::PointT<int>, utils::PointT<int>>> edges;
-//     preorder(node, [&](std::shared_ptr<SteinerTreeNode> node) {
-//         for (auto child : node->children) {
-//             edges.emplace_back(*node, *child);
-//         }
-//     });
-//     std::stringstream ss;
-//     ss << "[";
-//     for (int i = 0; i < edges.size(); i++) {
-//         auto& edge = edges[i];
-//         ss << "[" << edge.first << ", " << edge.second << "]";
-//         ss << (i < edges.size() - 1 ? ", " : "]");
-//     }
-//     return ss.str();
-// }
-
-// std::string PatternRoutingNode::getPythonString(std::shared_ptr<PatternRoutingNode> routingDag) {
-//     vector<std::pair<utils::PointT<int>, utils::PointT<int>>> edges;
-//     std::function<void(std::shared_ptr<PatternRoutingNode>)> getEdges =
-//         [&](std::shared_ptr<PatternRoutingNode> node) {
-//             for (auto& childPaths : node->paths) {
-//                 for (auto& path : childPaths) {
-//                     edges.emplace_back(*node, *path);
-//                     getEdges(path);
-//                 }
-//             }
-//         };
-//     getEdges(routingDag);
-//     std::stringstream ss;
-//     ss << "[";
-//     for (int i = 0; i < edges.size(); i++) {
-//         auto& edge = edges[i];
-//         ss << "[" << edge.first << ", " << edge.second << "]";
-//         ss << (i < edges.size() - 1 ? ", " : "]");
-//     }
-//     return ss.str();
-// }
-
 void PatternRoute::constructSteinerTree() {
     // 1. Select access points
     robin_hood::unordered_map<uint64_t, std::pair<utils::PointT<int>, utils::IntervalT<int>>> selectedAccessPoints;
@@ -453,49 +414,6 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
     }
 }
 
-/*
-void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node, std::shared_ptr<GRTreeNode> &parent) {
-    if (node->children.size() == 0) {
-        // check if the node is an access point
-        int maxlayer = -1;
-        for (auto &accessPoint : allAccessPoints) {
-            if (accessPoint.x == node->x && accessPoint.y == node->y && accessPoint.layerIdx == node->layerIdx) {
-                return;
-            }
-            if (accessPoint.x == node->x && accessPoint.y == node->y){
-                // node->layerIdx = accessPoint.layerIdx;
-                // return;
-                if(accessPoint.layerIdx<=node->layerIndex)
-                maxlayer = max(accessPoint.layerIdx, maxlayer);
-            }
-        }
-        if(maxlayer != -1){
-            node->layerIdx = maxlayer;
-            return;
-        }
-        // if not, remove the node
-        node = nullptr;
-        return;
-
-    } else {
-        for (int i = node->children.size() - 1; i >= 0; i--) {
-            pruneRoutingTree(node->children[i], node);
-            bool same = (node->x == node->children[i]->x) && (node->y == node->children[i]->y) && (node->layerIdx == node->children[i]->layerIdx);
-            
-            if (node->children[i] == nullptr) {
-                node->children.erase(node->children.begin() + i);
-            }
-            else if (same) { // remove the child and move its children to the parent
-                for (auto &child : node->children[i]->children) {
-                    node->children.push_back(child);
-                }
-                node->children.erase(node->children.begin() + i);
-            }
-        }
-    }
-}
-*/
-
 void PatternRoute::run() {
     calculateRoutingCosts(routingDag);
     // net.setRoutingTree(getRoutingTree(routingDag));
@@ -583,9 +501,10 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
                 // CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
                 CostT cost = 0;
                 if(layerIndex - lowLayerIndex >= 3){
-                    cost = viaCosts[layerIndex - 1] - viaCosts[lowLayerIndex] - 2*parameters.UnitViaCost;
+                    cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];// - 2*parameters.UnitViaCost;
                 }
-                // cost += (layerIndex - lowLayerIndex) * parameters.UnitViaCost;
+                // cost = viaCosts[layerIndex] - viaCosts[fixedLayers.high];
+                // cost += (layerIndex - fixedLayers.high) * parameters.UnitViaCost;
                 assert(cost >= 0);
                 for (CostT childCost : minChildCosts)
                     cost += childCost;

@@ -57,14 +57,12 @@ void GRNet::getGuides() {
     for (const auto& vec : guide) {
         string temp;    
         for (const auto& i : vec) {
-            // guide_string += to_string(i) + " ";
             temp += to_string(i) + " ";
         }
         if (guideSet.find(temp) == guideSet.end()) {
             guideSet.insert(temp);
             guide_string += temp + "\n";
         }
-        // guide_string += "\n";
     }
     guide_string += ")\n";
 }

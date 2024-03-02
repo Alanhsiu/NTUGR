@@ -35,9 +35,6 @@ struct Parameters {
     std::string cap_file;
     std::string net_file;
     std::string out_file;
-    // int threads = 8;
-    // bool stage2 = true;
-    // bool stage3 = false;
 
     const int min_routing_layer = 1;
     const double max_detour_ratio = 0.1; // may change
@@ -75,7 +72,6 @@ struct Parameters {
         cout << "cap file: " << cap_file << '\n';
         cout << "net file: " << net_file << '\n';
         cout << "output  : " << out_file << '\n';
-        // cout << "threads : " << threads  << '\n';
         cout << '\n';
     }
 };

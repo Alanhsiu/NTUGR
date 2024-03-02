@@ -456,24 +456,3 @@ void GridGraph::updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<G
         }
     });
 }
-
-// void GridGraph::write(const std::string heatmap_file) const {
-//     cout << "writing heatmap to file..." << '\n';
-//     std::stringstream ss;
-
-//     ss << nLayers << " " << xSize << " " << ySize << " " << '\n';
-//     for (int layerIndex = 0; layerIndex < nLayers; layerIndex++) {
-//         // ss << layerNames[layerIndex] << '\n';
-//         ss << to_string(layerIndex) << '\n';
-//         for (int y = 0; y < ySize; y++) {
-//             for (int x = 0; x < xSize; x++) {
-//                 ss << (graphEdges[layerIndex][x][y].capacity - graphEdges[layerIndex][x][y].demand)
-//                    << (x == xSize - 1 ? "" : " ");
-//             }
-//             ss << '\n';
-//         }
-//     }
-//     std::ofstream fout(heatmap_file);
-//     fout << ss.str();
-//     fout.close();
-// }

@@ -11,7 +11,7 @@ do
     echo "data: $data"
     start=$(date +%s)
     cd $router_path
-    $router_path/route  -cap $benchmark_path/$data.cap -net $benchmark_path/$data.net -output $solution_path/$data.output
+    $router_path/route  -cap $benchmark_path/$data.cap -net $benchmark_path/$data.net -output $solution_path/$data.output -mode "fast"
     end=$(date +%s)
     runtime=$((end-start))
     cd ..

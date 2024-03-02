@@ -14,21 +14,6 @@ GlobalRouter::GlobalRouter(const Design& design, const Parameters& params)
     }
 }
 
-// #include <unistd.h>
-// void monitorMemoryUsage() {
-//     pid_t pid = getpid();
-//     std::string statusFilePath = "/proc/" + std::to_string(pid) + "/status";
-//     std::ifstream statusFile(statusFilePath);
-//     std::string line;
-
-//     while (std::getline(statusFile, line)) {
-//         if (line.find("VmRSS") != std::string::npos) {
-//             std::cout << "Memory usage: " << line << std::endl;
-//             break;
-//         }
-//     }
-// }
-
 void GlobalRouter::route() {
     int n1 = 0, n2 = 0, n3=0;  // for statistics
     auto t = std::chrono::high_resolution_clock::now();
@@ -45,8 +30,6 @@ void GlobalRouter::route() {
 
     bool stage2 = true;
     bool stage3 = false;
-    // if(nets.size()<150000)
-    //     stage3 = true;
 
     // Stage 1: Pattern routing
     n1 = netIndices.size();
@@ -54,17 +37,17 @@ void GlobalRouter::route() {
     cout << "stage 1: pattern routing" << std::endl;
 
     int threadNum = 4;
-    // int threadNum = parameters.threads;
     vector<vector<int>> nonoverlapNetIndices;
     nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
-
+// new add
+    sortNetIndices(netIndices);
     /* Separate 1 */
     // separateNetIndices(netIndices, nonoverlapNetIndices);
     separateNetIndices1(netIndices, nonoverlapNetIndices);
-#pragma omp parallel for
-    for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
-        sortNetIndices(nonoverlapNetIndices[i]);
-    }
+// #pragma omp parallel for
+//     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
+//         sortNetIndices(nonoverlapNetIndices[i]);
+//     }
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
@@ -120,7 +103,6 @@ void GlobalRouter::route() {
 
     netIndices.clear();
     for (const auto& net : nets) {
-        // if (gridGraph.checkOverflow(net.getRoutingTree(), overflowThreshold) > 0) {
         if (gridGraph.checkOverflow(net.getRoutingTree(), 1) > 0) { // change to stage
             netIndices.push_back(net.getIndex());
         }
@@ -188,7 +170,6 @@ void GlobalRouter::route() {
         netIndices.clear();
         for (const auto& net : nets) {
             if (gridGraph.checkOverflow(net.getRoutingTree(), 2) > 0) { // change to stage
-            // if (gridGraph.checkOverflow(net.getRoutingTree(), overflowThreshold) > 0) {
                 netIndices.push_back(net.getIndex());
             }
         }
