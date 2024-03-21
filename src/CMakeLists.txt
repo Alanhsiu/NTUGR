@@ -37,7 +37,7 @@ target_include_directories(route PRIVATE basic gr flute)
 target_link_libraries(route PRIVATE basic gr flute)
 
 # Set the C++ standard
-set_property(TARGET route PROPERTY CXX_STANDARD 11)
+set_property(TARGET route PROPERTY CXX_STANDARD 17)
 
 # Include debug symbols in the Debug build
 if(CMAKE_BUILD_TYPE MATCHES Debug)

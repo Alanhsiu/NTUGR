@@ -105,28 +105,6 @@ CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) 
     return cost;
 }
 
-
-// CostT GridGraph::getViaCost(const int layerIndex, const utils::PointT<int> loc) const {
-//     assert(layerIndex + 1 < nLayers);
-//     // CostT cost = UnitViaCost;
-//     CostT cost = 0;
-//     // Estimated wire cost to satisfy min-area
-//     // for (int l = layerIndex; l <= layerIndex + 1; l++) {
-//     //     unsigned direction = layerDirections[l]; // layer direction
-//     //     utils::PointT<int> lowerLoc = loc;
-//     //     lowerLoc[direction] -= 1;
-//     //     DBU lowerEdgeLength = loc[direction] > 0 ? getEdgeLength(direction, lowerLoc[direction]) : 0;
-//     //     DBU higherEdgeLength = loc[direction] < getSize(direction) - 1 ? getEdgeLength(direction, loc[direction]) : 0;
-//     //     // CapacityT demand = (CapacityT)layerMinLengths[l] / (lowerEdgeLength + higherEdgeLength) * parameters.via_multiplier;
-//     CapacityT demand = parameters.UnitViaDemand;
-//     //     if (lowerEdgeLength > 0)
-//     //         cost += getWireCost(l, lowerLoc, demand);
-//     //     if (higherEdgeLength > 0)
-//     cost += getWireCost(layerIndex, loc, demand);
-//     // }
-//     return cost;
-// }
-
 void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_t, std::pair<utils::PointT<int>, utils::IntervalT<int>>>& selectedAccessPoints) const {
     selectedAccessPoints.clear();
     // cell hash (2d) -> access point, fixed layer interval
@@ -141,13 +119,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
             int accessibility = 0;
             if (point.layerIdx >= parameters.min_routing_layer) {
                 unsigned direction = getLayerDirection(point.layerIdx);
-                accessibility += getEdge(point.layerIdx, point.x, point.y).capacity >= 1;
-                accessibility += getEdge(point.layerIdx, point.x, point.y).capacity >= 1;
-                if (point[direction] > 0) {
-                    auto lower = point;
-                    lower[direction] -= 1;
-                    accessibility += getEdge(lower.layerIdx, lower.x, lower.y).capacity >= 1;
-                }
+                accessibility += getEdge(point.layerIdx, point.x, point.y).capacity;
             } else {
                 accessibility = 1;
             }
@@ -157,14 +129,15 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
                 bestAccessDist = {accessibility, distance};
             }
         }
-        if (bestAccessDist.first == 0) {
-            cout << "Warning: the pin is hard to access." << '\n';
-        } 
         const utils::PointT<int> selectedPoint = accessPoints[bestIndex];
+
+        // check if the selected point is already in the selectedAccessPoints
         const uint64_t hash = hashCell(selectedPoint.x, selectedPoint.y);
         if (selectedAccessPoints.find(hash) == selectedAccessPoints.end()) {
             selectedAccessPoints.emplace(hash, std::make_pair(selectedPoint, utils::IntervalT<int>()));
         }
+
+        // update the fixed layer interval
         utils::IntervalT<int>& fixedLayerInterval = selectedAccessPoints[hash].second;
         for (const auto& point : accessPoints) {
             if (point.x == selectedPoint.x && point.y == selectedPoint.y) {
@@ -173,10 +146,10 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
         }
     }
     // Extend the fixed layers to 2 layers higher to facilitate track switching
-    for (auto& accessPoint : selectedAccessPoints) {
-        utils::IntervalT<int>& fixedLayers = accessPoint.second.second;
-        fixedLayers.high = min(fixedLayers.high + 1, (int)getNumLayers() - 1);
-    }
+    // for (auto& accessPoint : selectedAccessPoints) {
+    //     utils::IntervalT<int>& fixedLayers = accessPoint.second.second;
+    //     fixedLayers.high = min(fixedLayers.high + 1, (int)getNumLayers() - 1);
+    // }
 }
 
 void GridGraph::commit(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand) {
@@ -253,13 +226,6 @@ void GridGraph::commitTree(const std::shared_ptr<GRTreeNode>& tree, const bool r
 
 // bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int overflowThreshold) const {
 bool GridGraph::checkOverflow_stage(const int layerIndex, const int x, const int y, int stage) const {
-    // after stage 1
-    // return getEdge(layerIndex, x, y).getResource() < overflowThreshold;
-
-    // if(stage==2){
-    //     return getEdge(layerIndex, x, y).getResource() < -10;
-    // }
-    // else
         return getEdge(layerIndex, x, y).getResource() < -2;
 }
 

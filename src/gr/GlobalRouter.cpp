@@ -16,8 +16,8 @@ GlobalRouter::GlobalRouter(const Design& design, const Parameters& params)
 
 void GlobalRouter::route() {
     int n1 = 0, n2 = 0, n3 = 0;  // for statistics
-    auto t = std::chrono::high_resolution_clock::now();
-    auto start = std::chrono::high_resolution_clock::now();
+    bool stage2 = true;
+    bool stage3 = false;
 
     vector<int> netIndices;
     netIndices.reserve(nets.size());
@@ -26,29 +26,27 @@ void GlobalRouter::route() {
     int overflowThreshold = -2;
     cout << "nets size: " << nets.size() << ", overflowThreshold: " << overflowThreshold << std::endl;
 
-    bool stage2 = true;
-    bool stage3 = false;
+    PatternRoute::readFluteLUT();
 
     // Stage 1: Pattern routing
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto temp = std::chrono::high_resolution_clock::now();
     n1 = netIndices.size();
-    PatternRoute::readFluteLUT();
-    cout << "stage 1: pattern routing" << std::endl;
+    cout << "Stage 1: Pattern routing" << std::endl;
 
     int threadNum = 4;
     vector<vector<int>> nonoverlapNetIndices;
     nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
-// new add
+
     sortNetIndices(netIndices);
+
     /* Separate 1 */
-    // separateNetIndices(netIndices, nonoverlapNetIndices);
-    separateNetIndices1(netIndices, nonoverlapNetIndices);
+    separateNetIndices(netIndices, nonoverlapNetIndices);
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
     /* Non-parallel 1 */
     int k = 0;
-    // int k = nonoverlapNetIndices[threadNum].size() / 2;
-    // int k = nonoverlapNetIndices[threadNum].size();
     for (int i = 0; i < k; ++i) {
         int netIndex = nonoverlapNetIndices[threadNum][i];
         PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
@@ -58,8 +56,8 @@ void GlobalRouter::route() {
         std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
         gridGraph.commitTree(tree);
     }
-    cout << "non-parallel for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-    start = std::chrono::high_resolution_clock::now();
+    cout << "non-parallel for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - temp).count() << std::endl;
+    temp = std::chrono::high_resolution_clock::now();
 
     /* Parallel 1 */
     omp_lock_t lock;
@@ -79,10 +77,10 @@ void GlobalRouter::route() {
             gridGraph.commitTree(tree);
         }
     }
-    cout << "parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-    start = std::chrono::high_resolution_clock::now();
+    cout << "parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - temp).count() << std::endl;
+    temp = std::chrono::high_resolution_clock::now();
 
-    /* Non-parallel 1 */
+    /* Non-parallel 2 */
     for (int i = k; i < nonoverlapNetIndices[threadNum].size(); ++i) {
         int netIndex = nonoverlapNetIndices[threadNum][i];
         PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
@@ -92,8 +90,10 @@ void GlobalRouter::route() {
         std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
         gridGraph.commitTree(tree);
     }
-    cout << "non-parallel for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-    start = std::chrono::high_resolution_clock::now();
+    cout << "non-parallel 2 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - temp).count() << std::endl;
+    temp = std::chrono::high_resolution_clock::now();
+
+    cout << "stage 1 time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t1).count() << std::endl;
 
     netIndices.clear();
     for (const auto& net : nets) {
@@ -105,17 +105,17 @@ void GlobalRouter::route() {
 
     // Stage 2: Pattern routing with possible detours
     auto t2 = std::chrono::high_resolution_clock::now();
+    n2 = netIndices.size();
     if (stage2 && netIndices.size() > 0) {
-        n2 = netIndices.size();
-        cout << "stage 2: pattern routing with possible detours" << std::endl;
+        cout << "Stage 2: Pattern routing with possible detours" << std::endl;
         GridGraphView<bool> congestionView;  // (2d) direction -> x -> y -> has overflow?
         gridGraph.extractCongestionView(congestionView);
 
         /* Separate 2 */
         vector<vector<int>> nonoverlapNetIndices;
-        nonoverlapNetIndices.resize(threadNum + 1);  // 8 for 8 threads, 1 for the rest
-        // separateNetIndices(netIndices, nonoverlapNetIndices);
-        separateNetIndices1(netIndices, nonoverlapNetIndices);
+        nonoverlapNetIndices.resize(threadNum + 1);
+        separateNetIndices(netIndices, nonoverlapNetIndices);
+
 #pragma omp parallel for
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
             sortNetIndices(nonoverlapNetIndices[i]);
@@ -123,10 +123,9 @@ void GlobalRouter::route() {
         for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
             cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
-        /* Parallel 1 */
+        /* Parallel 2 */
         omp_lock_t lock2;
         omp_init_lock(&lock2);
-
 
 #pragma omp parallel for
         for (int i = 0; i < threadNum; ++i) {
@@ -144,10 +143,10 @@ void GlobalRouter::route() {
                 gridGraph.commitTree(net.getRoutingTree());
             }
         }
-        cout << "parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-        start = std::chrono::high_resolution_clock::now();
+        cout << "parallel 2 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - temp).count() << std::endl;
+        temp = std::chrono::high_resolution_clock::now();
 
-        /* Non-parallel 1 */
+        /* Non-parallel 2 */
         for (int i = 0; i < nonoverlapNetIndices[threadNum].size(); ++i) {
             int netIndex = nonoverlapNetIndices[threadNum][i];
             GRNet& net = nets[netIndex];
@@ -159,8 +158,8 @@ void GlobalRouter::route() {
             patternRoute.run();
             gridGraph.commitTree(net.getRoutingTree());
         }
-        cout << "non-parallel for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
-        start = std::chrono::high_resolution_clock::now();
+        cout << "non-parallel 2 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - temp).count() << std::endl;
+        temp = std::chrono::high_resolution_clock::now();
 
         netIndices.clear();
         for (const auto& net : nets) {
@@ -171,12 +170,11 @@ void GlobalRouter::route() {
         cout << netIndices.size() << " / " << nets.size() << " nets have overflows." << std::endl;
 
         cout << "stage 2 time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t2).count() << std::endl;
-        start = std::chrono::high_resolution_clock::now();
+        temp = std::chrono::high_resolution_clock::now();
     }
 
     // Stage 3: maze routing on sparsified routing graph
     auto t3 = std::chrono::high_resolution_clock::now();
-
     n3 = netIndices.size();
     if (stage3 && netIndices.size() > 0) {
         cout << "stage 3: maze routing on sparsified routing graph" << '\n';
@@ -223,57 +221,6 @@ void GlobalRouter::route() {
 }
 
 void GlobalRouter::separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel
-    // separate nets into 8 groups, and the rest
-    int netSize = netIndices.size();
-    for (int netIndex : netIndices) {
-        const GRNet& net = nets[netIndex];
-        const auto& boundingBox = net.getBoundingBox();
-
-        int xlow = boundingBox.x.low, xhigh = boundingBox.x.high, ylow = boundingBox.y.low, yhigh = boundingBox.y.high;
-        int xSize = gridGraph.getSize(0), ySize = gridGraph.getSize(1);
-
-        if (xhigh < xSize / 2) {
-            if (yhigh < ySize / 2) {
-                if (yhigh < ySize / 4 && nonoverlapNetIndices[0].size() < netSize / 4) {
-                    nonoverlapNetIndices[0].push_back(netIndex);
-                    continue;
-                } else if (ylow > ySize / 4 && nonoverlapNetIndices[1].size() < netSize / 4) {
-                    nonoverlapNetIndices[1].push_back(netIndex);
-                    continue;
-                }
-            } else if (ylow > ySize / 2) {
-                if (yhigh < 3 * ySize / 4 && nonoverlapNetIndices[2].size() < netSize / 4) {
-                    nonoverlapNetIndices[2].push_back(netIndex);
-                    continue;
-                } else if (ylow > 3 * ySize / 4 && nonoverlapNetIndices[3].size() < netSize / 4) {
-                    nonoverlapNetIndices[3].push_back(netIndex);
-                    continue;
-                }
-            }
-        } else if (xlow > xSize / 2) {
-            if (yhigh < ySize / 2) {
-                if (yhigh < ySize / 4 && nonoverlapNetIndices[4].size() < netSize / 4) {
-                    nonoverlapNetIndices[4].push_back(netIndex);
-                    continue;
-                } else if (ylow > ySize / 4 && nonoverlapNetIndices[5].size() < netSize / 4) {
-                    nonoverlapNetIndices[5].push_back(netIndex);
-                    continue;
-                }
-            } else if (ylow > ySize / 2) {
-                if (yhigh < 3 * ySize / 4 && nonoverlapNetIndices[6].size() < netSize / 4) {
-                    nonoverlapNetIndices[6].push_back(netIndex);
-                    continue;
-                } else if (ylow > 3 * ySize / 4 && nonoverlapNetIndices[7].size() < netSize / 4) {
-                    nonoverlapNetIndices[7].push_back(netIndex);
-                    continue;
-                }
-            }
-        }
-        nonoverlapNetIndices[8].push_back(netIndex);
-    }
-}
-
-void GlobalRouter::separateNetIndices1(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel
     // separate nets into 4 groups, and the rest
     int netSize = netIndices.size();
     for (int netIndex : netIndices) {
@@ -303,101 +250,6 @@ void GlobalRouter::separateNetIndices1(vector<int>& netIndices, vector<vector<in
         nonoverlapNetIndices[4].push_back(netIndex);
     }
         
-}
-
-void GlobalRouter::separateNetIndices2(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel
-    // separate nets into 8 groups, and the rest
-    int netSize = netIndices.size();
-    for (int netIndex : netIndices) {
-        const GRNet& net = nets[netIndex];
-        const auto& boundingBox = net.getBoundingBox();
-
-        int xlow = boundingBox.x.low, xhigh = boundingBox.x.high, ylow = boundingBox.y.low, yhigh = boundingBox.y.high;
-        int xSize = gridGraph.getSize(0), ySize = gridGraph.getSize(1);
-
-        // 6 divide lines, x=1/4, 3/4, y=1/8, 3/8, 5/8, 7/8
-        if ((xhigh < 1 / 4) || (xlow > 3 / 4)) {
-            if ((yhigh < 1 / 8) || (ylow > 7 / 8)) {
-                nonoverlapNetIndices[0].push_back(netIndex);
-                continue;
-
-            } else if ((yhigh < 3 / 8) || (ylow > 1 / 8)) {
-                nonoverlapNetIndices[1].push_back(netIndex);
-                continue;
-
-            } else if ((yhigh < 5 / 8) || (ylow > 3 / 8)) {
-                nonoverlapNetIndices[2].push_back(netIndex);
-                continue;
-
-            } else if ((yhigh < 7 / 8) || (ylow > 5 / 8)) {
-                nonoverlapNetIndices[3].push_back(netIndex);
-                continue;
-            }
-        } else if ((xhigh < 3 / 4) || (xlow > 1 / 4)) {
-            if ((yhigh < 1 / 8) || (ylow > 7 / 8)) {
-                nonoverlapNetIndices[4].push_back(netIndex);
-                continue;
-
-            } else if ((yhigh < 3 / 8) || (ylow > 1 / 8)) {
-                nonoverlapNetIndices[5].push_back(netIndex);
-                continue;
-
-            } else if ((yhigh < 5 / 8) || (ylow > 3 / 8)) {
-                nonoverlapNetIndices[6].push_back(netIndex);
-                continue;
-
-            } else if ((yhigh < 7 / 8) || (ylow > 5 / 8)) {
-                nonoverlapNetIndices[7].push_back(netIndex);
-                continue;
-            }
-        }
-        nonoverlapNetIndices[8].push_back(netIndex);
-    }
-}
-
-void GlobalRouter::separateNetIndices3(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel
-    // separate nets into 9 groups, and the rest
-    int netSize = netIndices.size();
-    for (int netIndex : netIndices) {
-        const GRNet& net = nets[netIndex];
-        const auto& boundingBox = net.getBoundingBox();
-
-        int xlow = boundingBox.x.low, xhigh = boundingBox.x.high, ylow = boundingBox.y.low, yhigh = boundingBox.y.high;
-        int xSize = gridGraph.getSize(0), ySize = gridGraph.getSize(1);
-
-        if (xhigh < xSize / 3) {
-            if (yhigh < ySize / 3) {
-                nonoverlapNetIndices[0].push_back(netIndex);
-                continue;
-            } else if (ylow > 2 * ySize / 3) {
-                nonoverlapNetIndices[1].push_back(netIndex);
-                continue;
-            } else if (yhigh < 2 * ySize / 3 && ylow > ySize / 3) {
-                nonoverlapNetIndices[2].push_back(netIndex);
-                continue;
-            }
-        } else if (xlow > 2 * xSize / 3) {
-            if (yhigh < ySize / 3) {
-                nonoverlapNetIndices[3].push_back(netIndex);
-                continue;
-            } else if (ylow > 2 * ySize / 3) {
-                nonoverlapNetIndices[4].push_back(netIndex);
-                continue;
-            } else if (yhigh < 2 * ySize / 3 && ylow > ySize / 3) {
-                nonoverlapNetIndices[5].push_back(netIndex);
-                continue;
-            }
-        } else {
-            if (yhigh < ySize / 3) {
-                nonoverlapNetIndices[6].push_back(netIndex);
-                continue;
-            } else if (ylow > 2 * ySize / 3) {
-                nonoverlapNetIndices[7].push_back(netIndex);
-                continue;
-            }
-        }
-        nonoverlapNetIndices[8].push_back(netIndex);
-    }
 }
 
 void GlobalRouter::sortNetIndices(vector<int>& netIndices) const {  // sort by half perimeter: 短的先繞
