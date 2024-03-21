@@ -15,7 +15,7 @@ GlobalRouter::GlobalRouter(const Design& design, const Parameters& params)
 }
 
 void GlobalRouter::route() {
-    int n1 = 0, n2 = 0, n3=0;  // for statistics
+    int n1 = 0, n2 = 0, n3 = 0;  // for statistics
     auto t = std::chrono::high_resolution_clock::now();
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -24,8 +24,6 @@ void GlobalRouter::route() {
     for (const auto& net : nets)
         netIndices.emplace_back(net.getIndex());
     int overflowThreshold = -2;
-    // overflowThreshold = (nets.size() < 200000) ? 0 : -4;
-    // overflowThreshold = (nets.size() > 10000000) ? -10 : overflowThreshold;
     cout << "nets size: " << nets.size() << ", overflowThreshold: " << overflowThreshold << std::endl;
 
     bool stage2 = true;
@@ -44,10 +42,6 @@ void GlobalRouter::route() {
     /* Separate 1 */
     // separateNetIndices(netIndices, nonoverlapNetIndices);
     separateNetIndices1(netIndices, nonoverlapNetIndices);
-// #pragma omp parallel for
-//     for (int i = 0; i < nonoverlapNetIndices.size(); ++i) {
-//         sortNetIndices(nonoverlapNetIndices[i]);
-//     }
     for (int i = 0; i < nonoverlapNetIndices.size(); ++i)
         cout << "thread " << i << " size: " << nonoverlapNetIndices[i].size() << std::endl;
 
@@ -132,6 +126,7 @@ void GlobalRouter::route() {
         /* Parallel 1 */
         omp_lock_t lock2;
         omp_init_lock(&lock2);
+
 
 #pragma omp parallel for
         for (int i = 0; i < threadNum; ++i) {
@@ -224,6 +219,7 @@ void GlobalRouter::route() {
     }
 
     printStatistics();
+    if (parameters.write_heatmap) gridGraph.write();
 }
 
 void GlobalRouter::separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel

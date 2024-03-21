@@ -1,5 +1,5 @@
 #include <iostream>
-#include <experimental/filesystem>
+// #include <experimental/filesystem>
 #include <chrono>
 #include "global.h"
 #include "../basic/design.h"
@@ -13,27 +13,25 @@ using namespace std;
 
 int main(int argc, char* argv[]){
     ios::sync_with_stdio(false);
-    auto t = std::chrono::high_resolution_clock::now();
-    cout << "GLOBAL ROUTER CUGR" << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
+    cout << "GLOBAL ROUTING START" << std::endl;
 
-    // Parse parameters
+    // Read input
     Parameters parameters(argc, argv);
     Design design(parameters);
-    cout << "read netlist and capacity done!" << std::endl;
-    auto t1 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
-    cout << "USED TIME FOR READ:" << t1 << std::endl;
+    cout << "USED TIME FOR READ:" << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
     
     // Global router
     GlobalRouter globalRouter(design, parameters);
     globalRouter.route();
+
+    // Write result
     auto t_write = std::chrono::high_resolution_clock::now();
     globalRouter.write();
-    auto t2 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t_write).count();
-    cout << "write: " << std::setprecision(3) << std::fixed << t2 << " seconds" << std::endl;
+    cout << "USED TIME FOR WRITE:" << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t_write).count() << std::endl;
 
-    cout << "GLOBAL ROUTER CUGR DONE" << std::endl;
-    auto t3 = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - t).count();
-    cout << "USED TIME:" << t3 << std::endl;
+    cout << "GLOBAL ROUTING END" << std::endl;
+    cout << "TOTAL TIME:" << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
 
     return 0;
 }

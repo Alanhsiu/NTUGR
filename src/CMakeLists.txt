@@ -2,6 +2,7 @@
 
 # Specify the minimum version for CMake
 cmake_minimum_required(VERSION 3.10)
+set(CMAKE_CXX_STANDARD 11)
 
 # Project's name
 project(NTUGR)
@@ -33,10 +34,10 @@ add_executable(route ${MAIN_SOURCES})
 target_include_directories(route PRIVATE basic gr flute)
 
 # Link libraries
-target_link_libraries(route PRIVATE basic gr stdc++fs flute)
+target_link_libraries(route PRIVATE basic gr flute)
 
 # Set the C++ standard
-set_property(TARGET route PROPERTY CXX_STANDARD 17)
+set_property(TARGET route PROPERTY CXX_STANDARD 11)
 
 # Include debug symbols in the Debug build
 if(CMAKE_BUILD_TYPE MATCHES Debug)

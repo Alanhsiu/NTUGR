@@ -44,7 +44,7 @@ struct Parameters {
     const double cost_logistic_slope1 = 1.5;
     const double cost_logistic_slope2 = 0.5;
     // const double maze_logistic_slope = 0.5;
-    // const bool write_heatmap = false;
+    const bool write_heatmap = true;
 
     double UnitViaCost = 4.0; // have to be changed to the actual value
     const double UnitViaDemand = 0.2; // magic number

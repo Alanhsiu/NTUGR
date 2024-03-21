@@ -142,6 +142,7 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
             if (point.layerIdx >= parameters.min_routing_layer) {
                 unsigned direction = getLayerDirection(point.layerIdx);
                 accessibility += getEdge(point.layerIdx, point.x, point.y).capacity >= 1;
+                accessibility += getEdge(point.layerIdx, point.x, point.y).capacity >= 1;
                 if (point[direction] > 0) {
                     auto lower = point;
                     lower[direction] -= 1;
@@ -156,9 +157,9 @@ void GridGraph::selectAccessPoints(GRNet& net, robin_hood::unordered_map<uint64_
                 bestAccessDist = {accessibility, distance};
             }
         }
-        // if (bestAccessDist.first == 0) {
-        //     cout << "Warning: the pin is hard to access." << '\n';
-        // } 
+        if (bestAccessDist.first == 0) {
+            cout << "Warning: the pin is hard to access." << '\n';
+        } 
         const utils::PointT<int> selectedPoint = accessPoints[bestIndex];
         const uint64_t hash = hashCell(selectedPoint.x, selectedPoint.y);
         if (selectedAccessPoints.find(hash) == selectedAccessPoints.end()) {
@@ -455,4 +456,25 @@ void GridGraph::updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<G
             }
         }
     });
+}
+
+void GridGraph::write(const std::string heatmap_file) const {
+    std::cout << "writing heatmap to file..." << std::endl;
+    std::stringstream ss;
+    
+    ss << nLayers << " " << xSize << " " << ySize << " " << std::endl;
+    for (int layerIndex = 0; layerIndex < nLayers; layerIndex++) {
+        // ss << layerNames[layerIndex] << std::endl;
+        ss << layerIndex << std::endl;
+        for (int y = 0; y < ySize; y++) {
+            for (int x = 0; x < xSize; x++) {
+                ss << (graphEdges[layerIndex][x][y].capacity - graphEdges[layerIndex][x][y].demand)
+                     << (x == xSize - 1 ? "" : " ");
+            }
+            ss << std::endl;
+        }
+    }
+    std::ofstream fout(heatmap_file);
+    fout << ss.str();
+    fout.close();
 }
