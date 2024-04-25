@@ -3,6 +3,7 @@ import argparse
 import matplotlib.pyplot as plt
 import math
 import os
+import numpy as np
 
 def visualize(base_path, heatmap_name):
     print('visializing heatmap...')
@@ -34,23 +35,48 @@ def visualize(base_path, heatmap_name):
     os.system('mkdir -p {}'.format(fig_directory))
     
     min_figsize = 10
-    scale = 0.1
+    scale = 0.02
+    # for layer_idx in range(n_layers):
+    #     fig = plt.figure(
+    #         figsize=(
+    #             max(x_size * scale, min_figsize), 
+    #             max(y_size * scale, min_figsize)
+    #         )
+    #     )
+    #     # plt.subplot(n_rows, n_cols, layer_idx + 1)
+    #     plt.imshow(heatmaps[layer_idx], vmin=-v_max, vmax=v_max, cmap='coolwarm_r')
+    #     plt.title(layer_names[layer_idx])
+        
+    #     ax = plt.gca()
+    #     ax.invert_yaxis()
+    #     cax = fig.add_axes([ax.get_position().x1 + 0.005, ax.get_position().y0, 0.005, ax.get_position().height])
+    #     plt.colorbar(cax=cax)
+        
+    #     plt.savefig('{}/heatmap_{}.png'.format(fig_directory, layer_idx))
+    
+    threshold = 0  # Threshold for plotting
+
     for layer_idx in range(n_layers):
         fig = plt.figure(
             figsize=(
-                max(x_size * scale, min_figsize), 
+                max(x_size * scale, min_figsize),
                 max(y_size * scale, min_figsize)
             )
         )
         # plt.subplot(n_rows, n_cols, layer_idx + 1)
-        plt.imshow(heatmaps[layer_idx], vmin=-v_max, vmax=v_max, cmap='coolwarm_r')
+
+        # Modify heatmaps[layer_idx] to only include values less than the threshold
+        heatmaps_array = np.array(heatmaps[layer_idx]) 
+        masked_heatmap = np.ma.masked_where(heatmaps_array >= threshold, heatmaps_array) 
+
+        plt.imshow(masked_heatmap, vmin=-v_max, vmax=v_max, cmap='coolwarm_r')
         plt.title(layer_names[layer_idx])
-        
+
         ax = plt.gca()
         ax.invert_yaxis()
         cax = fig.add_axes([ax.get_position().x1 + 0.005, ax.get_position().y0, 0.005, ax.get_position().height])
         plt.colorbar(cax=cax)
-        
+
         plt.savefig('{}/heatmap_{}.png'.format(fig_directory, layer_idx))
 
 base_path = '/home/b09901066/ISPD-NTUEE/NTUGR/heatmaps'                

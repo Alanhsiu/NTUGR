@@ -13,9 +13,13 @@ set(GR_SOURCES
     PatternRoute.cpp
 )
 
+# Add gpulibrary
+# add_library(grgpu XXX.cu)
+
 # Add library target
 add_library(gr ${GR_SOURCES})
 target_include_directories(gr PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# target_link_libraries(gr PUBLIC grgpu)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)

@@ -47,7 +47,7 @@ struct Parameters {
     const bool write_heatmap = false;
 
     double UnitViaCost = 4.0; // have to be changed to the actual value
-    const double UnitViaDemand = 0.2; // magic number
+    const double UnitViaDemand = 0.5; // magic number
     
     // command: /evaluator $input_path/$data.cap $input_path/$data.net $output_path/$data.PR_output
     Parameters(int argc, char* argv[]) {

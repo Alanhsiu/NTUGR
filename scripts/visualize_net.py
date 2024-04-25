@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # Given data: a series of lines in 3D space
 # Read the data from a file data.txt
 lines = []
-with open('data.txt', 'r') as f:
+with open('/home/b09901066/ISPD-NTUEE/NTUGR/scripts/data.txt', 'r') as f:
     for line in f:
         lines.append([float(x) for x in line.split()])
 

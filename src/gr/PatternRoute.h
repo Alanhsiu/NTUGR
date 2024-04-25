@@ -31,7 +31,7 @@ class PatternRoutingNode : public utils::PointT<int> {
     utils::IntervalT<int> fixedLayers;                          // layers that must be visited in order to connect all the pins
     vector<CostT> costs;                                        // layerIndex -> cost
     vector<vector<std::pair<int, int>>> bestPaths;              // best path for each child; layerIndex -> childIndex -> (pathIndex, layerIndex)
-    bool optional;
+    bool optional;  // Alan: if this node is optional, it can be skipped if it is not necessary to connect all the pins
 
     PatternRoutingNode(utils::PointT<int> point, int _index, bool _optional = false)
         : utils::PointT<int>(point), index(_index), optional(_optional) {}

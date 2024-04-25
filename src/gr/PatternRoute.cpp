@@ -21,7 +21,7 @@ void PatternRoute::constructSteinerTree() {
         }
     } else {
         //
-        int xs[degree * 4];
+        int xs[degree * 4]; // xs is 
         int ys[degree * 4];
         int i = 0;
         for (auto& accessPoint : selectedAccessPoints) {
@@ -62,10 +62,6 @@ void PatternRoute::constructSteinerTree() {
             // Set fixed layer interval
             uint64_t hash = gridGraph.hashCell(current->x, current->y);
             if (selectedAccessPoints.find(hash) != selectedAccessPoints.end()) {
-                // auto a = selectedAccessPoints[hash];
-                // if (net.name == "tcdm_slave_northeast_resp_o[12]") {
-                //     a = selectedAccessPoints[hash];
-                // }
                 current->fixedLayers = selectedAccessPoints[hash].second;
             }
             // Connect current to parent
@@ -131,6 +127,34 @@ void PatternRoute::constructPaths(std::shared_ptr<PatternRoutingNode>& start, st
             std::shared_ptr<PatternRoutingNode> mid = std::make_shared<PatternRoutingNode>(midPoint, numDagNodes++, true);
             mid->paths = {{end}};
             childPaths.push_back(mid);
+        }
+
+        // Adding Z-shape paths
+        bool isZShape = false;
+        if(start->x == 0 || start->x == gridGraph.getSize(0) - 1 || end->x == 0 || end->x == gridGraph.getSize(0) - 1) {
+            isZShape = true;
+        }
+        if (isZShape) {
+            for (int zPathIndex = 0; zPathIndex <= 1; zPathIndex++) {
+                utils::PointT<int> firstMidPoint, secondMidPoint;
+
+                if (zPathIndex == 0) {
+                    // First Z-shape pattern
+                    firstMidPoint = utils::PointT<int>((start->x + end->x) / 2, start->y);
+                    secondMidPoint = utils::PointT<int>((start->x + end->x) / 2, end->y);
+                } else {
+                    // Second Z-shape pattern
+                    firstMidPoint = utils::PointT<int>(start->x, (start->y + end->y) / 2);
+                    secondMidPoint = utils::PointT<int>(end->x, (start->y + end->y) / 2);
+                }
+
+                std::shared_ptr<PatternRoutingNode> firstMid = std::make_shared<PatternRoutingNode>(firstMidPoint, numDagNodes++, true);
+                std::shared_ptr<PatternRoutingNode> secondMid = std::make_shared<PatternRoutingNode>(secondMidPoint, numDagNodes++, true);
+                secondMid->paths = {{end}};
+                firstMid->paths = {{secondMid}};
+
+                childPaths.push_back(firstMid);
+            }
         }
     }
 }
@@ -374,21 +398,21 @@ void PatternRoute::getAllAccessPoints() {
     }
 }
 
-void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
+void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode>& node) {
     if (node->children.size() == 0) {
         // check if the node is an access point
         int maxlayer = -1;
-        for (auto &accessPoint : allAccessPoints) {
+        for (auto& accessPoint : allAccessPoints) {
             if (accessPoint.x == node->x && accessPoint.y == node->y && accessPoint.layerIdx == node->layerIdx) {
                 return;
             }
-            if (accessPoint.x == node->x && accessPoint.y == node->y){
+            if (accessPoint.x == node->x && accessPoint.y == node->y) {
                 // node->layerIdx = accessPoint.layerIdx;
                 // return;
                 maxlayer = max(accessPoint.layerIdx, maxlayer);
             }
         }
-        if(maxlayer != -1){
+        if (maxlayer != -1) {
             node->layerIdx = maxlayer;
             return;
         }
@@ -400,12 +424,11 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
         for (int i = node->children.size() - 1; i >= 0; i--) {
             pruneRoutingTree(node->children[i]);
             bool same = (node->x == node->children[i]->x) && (node->y == node->children[i]->y) && (node->layerIdx == node->children[i]->layerIdx);
-            
+
             if (node->children[i] == nullptr) {
                 node->children.erase(node->children.begin() + i);
-            }
-            else if (same) { // remove the child and move its children to the parent
-                for (auto &child : node->children[i]->children) {
+            } else if (same) {  // remove the child and move its children to the parent
+                for (auto& child : node->children[i]->children) {
                     node->children.push_back(child);
                 }
                 node->children.erase(node->children.begin() + i);
@@ -417,23 +440,21 @@ void PatternRoute::pruneRoutingTree(std::shared_ptr<GRTreeNode> &node) {
 void PatternRoute::run() {
     calculateRoutingCosts(routingDag);
     // net.setRoutingTree(getRoutingTree(routingDag));
-    if(net.name == "i_tile/gen_caches\\[0\\].i_snitch_icache/i_handler/n_526"){
-        printf("run");
-    }
+
     std::shared_ptr<GRTreeNode> routingTree = getRoutingTree(routingDag);
 
     // prune the tree
     getAllAccessPoints();
-    
+
     std::unordered_set<string> set;
-    for(auto &accessPoint : allAccessPoints){
+    for (auto& accessPoint : allAccessPoints) {
         set.insert(to_string(accessPoint.x) + " " + to_string(accessPoint.y) + " " + to_string(accessPoint.layerIdx));
     }
     // check if there are duplicate access points
-    bool isDuplicate = set.size() != allAccessPoints.size();    
+    bool isDuplicate = set.size() != allAccessPoints.size();
 
     // not pruning routing tree for mempool_cluster debugging
-    if(!isDuplicate){
+    if (!isDuplicate) {
         pruneRoutingTree(routingTree);
     }
     net.setRoutingTree(routingTree);
@@ -498,13 +519,12 @@ void PatternRoute::calculateRoutingCosts(std::shared_ptr<PatternRoutingNode>& no
                 }
             }
             if (layerIndex >= fixedLayers.high) {
-                // CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
-                CostT cost = 0;
-                if(layerIndex - lowLayerIndex >= 3){
-                    cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];// - 2*parameters.UnitViaCost;
-                }
-                // cost = viaCosts[layerIndex] - viaCosts[fixedLayers.high];
-                // cost += (layerIndex - fixedLayers.high) * parameters.UnitViaCost;
+                CostT cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex];
+                // CostT cost = 0;
+                // if (layerIndex - lowLayerIndex >= 3) {
+                //     cost = viaCosts[layerIndex] - viaCosts[lowLayerIndex]; // - 2*parameters.UnitViaDemand;
+                // }
+                // CostT cost = viaCosts[layerIndex] - viaCosts[fixedLayers.high];
                 assert(cost >= 0);
                 for (CostT childCost : minChildCosts)
                     cost += childCost;

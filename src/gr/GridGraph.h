@@ -51,8 +51,8 @@ public:
     std::string getPythonString(const std::shared_ptr<GRTreeNode>& routingTree) const;
    
     // 2D maps
-    void extractBlockageView(GridGraphView<bool>& view) const;
     void extractCongestionView(GridGraphView<bool>& view) const; // 2D overflow look-up table
+    void updateCongestionView(GridGraphView<bool>& view, const std::shared_ptr<GRTreeNode> routingTree) const;
     void extractWireCostView(GridGraphView<CostT>& view) const;
     void updateWireCostView(GridGraphView<CostT>& view, std::shared_ptr<GRTreeNode> routingTree) const;
 
@@ -94,7 +94,7 @@ public:
     // Methods for updating demands 
     void commit(const int layerIndex, const utils::PointT<int> lower, const CapacityT demand);
     void commitWire(const int layerIndex, const utils::PointT<int> lower, const bool reverse = false);
-    void commitVia(const int layerIndex, const utils::PointT<int> loc, const bool reverse = false);
+    void commitVia(const int layerIndex, const utils::PointT<int> loc, const bool reverse = false, bool isStackedVia = false);
 
     // for getEdgeLength()
     vector<int> hEdge;
