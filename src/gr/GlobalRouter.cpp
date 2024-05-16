@@ -50,7 +50,29 @@ void GlobalRouter::route() {
     omp_lock_t lock;
     omp_init_lock(&lock);
 
-#pragma omp parallel for
+    /* cut down the most corner
+        the capacity is stored in this.gridgraph.graphedges.capacity, and
+        the net is stored in this.nets
+        take 1/4 corner as example
+    */
+    int x_bound = gridGraph.xSize/2;
+    int y_bound = gridGraph.ySize/2;
+    vector<vector<vector<double>>> cap(gridGraph.nLayers, vector<vector<double>>(x_bound, vector<double>(y_bound)));
+    for(int i=0; i<(int)gridGraph.nLayers; i++){
+        for(int j=0; j<x_bound; j++){
+            for(int k=0; k<y_bound; k++){
+                cap[i][j][k] = gridGraph.graphEdges[i][j][k].capacity;
+            }
+        }
+    } // this cap is ready to be written to file
+
+    /* for net:
+        should be obtained from the "routingDag" attribute in PatternRoute
+    */
+   std::vector<std::pair<Point, Point>> extracted_nets;
+
+
+// #pragma omp parallel for
     for (int i = 0; i < threadNum; ++i) {
         for (int j = 0; j < nonoverlapNetIndices[i].size(); ++j) {
             int netIndex = nonoverlapNetIndices[i][j];
@@ -59,6 +81,7 @@ void GlobalRouter::route() {
             patternRoute.constructSteinerTree();
             omp_unset_lock(&lock);
             patternRoute.constructRoutingDAG();
+            patternRoute.extractNet(extracted_nets, x_bound, y_bound);
             patternRoute.run();
             std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
             gridGraph.commitTree(tree);
@@ -73,6 +96,7 @@ void GlobalRouter::route() {
         PatternRoute patternRoute(nets[netIndex], gridGraph, parameters);
         patternRoute.constructSteinerTree();
         patternRoute.constructRoutingDAG();
+        patternRoute.extractNet(extracted_nets, x_bound, y_bound);
         patternRoute.run();
         std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
         gridGraph.commitTree(tree);
@@ -115,7 +139,7 @@ void GlobalRouter::route() {
         omp_lock_t lock2;
         omp_init_lock(&lock2);
 
-#pragma omp parallel for
+// #pragma omp parallel for
         for (int i = 0; i < threadNum; ++i) {
             for (int j = 0; j < nonoverlapNetIndices[i].size(); ++j) {
                 int netIndex = nonoverlapNetIndices[i][j];
@@ -205,7 +229,7 @@ void GlobalRouter::route() {
 
     printStatistics();
     if (parameters.write_heatmap)
-        gridGraph.write();
+        gridGraph.write(parameters.heatmap_file);
 }
 
 void GlobalRouter::separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel
@@ -343,7 +367,7 @@ void GlobalRouter::write(std::string guide_file) {
 
     auto start = std::chrono::high_resolution_clock::now();
     int netSize = nets.size();
-#pragma omp parallel for
+// #pragma omp parallel for
     for (int i = 0; i < netSize; i++) {
         nets[i].getGuides();
     }

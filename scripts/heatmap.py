@@ -5,14 +5,16 @@ import math
 import os
 import numpy as np
 
+plt.switch_backend('agg')
+
 def visualize(base_path, heatmap_name):
     print('visializing heatmap...')
     file = open(heatmap_name, 'r')
     
     line = file.readline().split(' ')
-    n_layers = int(line[0]);
-    x_size = int(line[1]);
-    y_size = int(line[2]);
+    n_layers = int(line[0])
+    x_size = int(line[1])
+    y_size = int(line[2])
     
     n_cols = 4
     n_rows = math.ceil(n_layers / n_cols)
@@ -54,7 +56,7 @@ def visualize(base_path, heatmap_name):
         
     #     plt.savefig('{}/heatmap_{}.png'.format(fig_directory, layer_idx))
     
-    threshold = 0  # Threshold for plotting
+    threshold = 11  # Threshold for plotting
 
     for layer_idx in range(n_layers):
         fig = plt.figure(

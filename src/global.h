@@ -44,7 +44,8 @@ struct Parameters {
     const double cost_logistic_slope1 = 1.5;
     const double cost_logistic_slope2 = 0.5;
     // const double maze_logistic_slope = 0.5;
-    const bool write_heatmap = false;
+    const bool write_heatmap = true;
+    std::string heatmap_file = "/home/b09901066/ISPD-NTUEE/NTUGR/heatmaps/heatmap.txt";
 
     double UnitViaCost = 4.0; // have to be changed to the actual value
     const double UnitViaDemand = 0.5; // magic number

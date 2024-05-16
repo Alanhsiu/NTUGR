@@ -54,6 +54,8 @@ class PatternRoute {
     // added by Alan
     void getAllAccessPoints();
     void pruneRoutingTree(std::shared_ptr<GRTreeNode> &node);
+    // for net extraction
+    void extractNet(std::vector<std::pair<Point, Point> >& extracted_nets, int x_bound, int y_bound);
 
    private:
     const Parameters& parameters;
