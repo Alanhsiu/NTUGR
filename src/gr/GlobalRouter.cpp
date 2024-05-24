@@ -66,6 +66,8 @@ void GlobalRouter::route() {
         }
     } // this cap is ready to be written to file
 
+    write_partial_cap(cap);
+
     /* for net:
         should be obtained from the "routingDag" attribute in PatternRoute
     */
@@ -81,6 +83,9 @@ void GlobalRouter::route() {
             patternRoute.constructSteinerTree();
             omp_unset_lock(&lock);
             patternRoute.constructRoutingDAG();
+            if(patternRoute.net.getName() == "i_tile/inst_data_o[18]"){
+                cout << "i_tile/inst_data_o[18]" << endl;
+            }
             patternRoute.extractNet(extracted_nets, x_bound, y_bound);
             patternRoute.run();
             std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
@@ -230,6 +235,25 @@ void GlobalRouter::route() {
     printStatistics();
     if (parameters.write_heatmap)
         gridGraph.write(parameters.heatmap_file);
+
+    gridGraph.writeCapacity(parameters.capacity_file);
+}
+
+void GlobalRouter::write_partial_cap(vector<vector<vector<double>>>& cap) const {
+    std::stringstream ss;
+    ss << gridGraph.nLayers << " " << (int)gridGraph.ySize/2 << " " << (int)gridGraph.xSize/2 << std::endl;
+    for (int layerIndex = 0; layerIndex < gridGraph.nLayers; layerIndex++) {
+        ss << layerIndex << std::endl;
+        for (int x = 0; x < (int)gridGraph.xSize/2; x++) {
+            for (int y = 0; y < (int)gridGraph.ySize/2; y++) {
+                ss << cap[layerIndex][x][y] << (x == gridGraph.xSize - 1 ? "" : " ");
+            }
+            ss << std::endl;
+        }
+    }
+    std::ofstream fout(cap_file_name);
+    fout << ss.str();
+    fout.close();
 }
 
 void GlobalRouter::separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const {  // separate nets such that nets are routed in parallel

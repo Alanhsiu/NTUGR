@@ -58,6 +58,7 @@ public:
 
     // For visualization
     void write(const std::string heatmap_file="heatmap.txt") const;
+    void writeCapacity(const std::string heatmap_file="capacity.txt") const;
     
 // private:
     const Parameters& parameters;

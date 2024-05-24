@@ -113,6 +113,38 @@ void PatternRoute::constructRoutingDAG() {
     constructDag(routingDag, steinerTree);
 }
 
+void PatternRoute::extractNet(std::vector<std::pair<Point, Point> >& extracted_nets, int x_bound, int y_bound){
+    std::function<void(const std::shared_ptr<PatternRoutingNode>&)> preorder = [&](const std::shared_ptr<PatternRoutingNode>& node) {
+        if (node == nullptr)
+            return;
+        
+        // Do whatever you want to do with the current node here
+        for (const auto &child : node->children) {
+            /*for testing*/
+            if((node->fixedLayers.high == 2147483647 && child->fixedLayers.low == 2147483647)||
+                (node->fixedLayers.high == 2147483647 && child->fixedLayers.low == -2147483648)||
+                (node->fixedLayers.high == -2147483648 && child->fixedLayers.low == 2147483647)||
+                (node->fixedLayers.high == -2147483648 && child->fixedLayers.low == -2147483648)
+            ){
+                cout << net.getName() << endl;
+            }
+            if(node->x <= x_bound && node->y <= y_bound &&
+                child->x <= x_bound && child->y <= y_bound
+            ){
+                // the layer is still undefined
+                // cout << "Node: " << node->x << " " << node->y << " " << node->fixedLayers.low << " " << node->fixedLayers.high << '\n';
+                int node_layer = (node->fixedLayers.low >= 0) ? node->fixedLayers.low : 0;
+                int child_layer = (child->fixedLayers.low >= 0) ? child->fixedLayers.low : 0;
+                extracted_nets.push_back(std::make_pair(Point(0, 0, node_layer, node->x, node->y), Point(0, 0, child_layer, child->x, child->y)));
+            }
+            preorder(child);
+        }
+    };
+
+    // Call preorderTraversal with routingDag
+    preorder(routingDag);
+}
+
 void PatternRoute::constructPaths(std::shared_ptr<PatternRoutingNode>& start, std::shared_ptr<PatternRoutingNode>& end, int childIndex) {
     if (childIndex == -1) {
         childIndex = start->paths.size();

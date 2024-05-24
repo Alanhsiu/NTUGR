@@ -457,3 +457,23 @@ void GridGraph::write(const std::string heatmap_file) const {
     fout << ss.str();
     fout.close();
 }
+
+void GridGraph::writeCapacity(const std::string heatmap_file) const {
+    std::cout << "writing capacity heatmap to file..." << std::endl;
+    std::stringstream ss;
+
+    ss << nLayers << " " << xSize << " " << ySize << " " << std::endl;
+    for (int layerIndex = 0; layerIndex < nLayers; layerIndex++) {
+        // ss << layerNames[layerIndex] << std::endl;
+        ss << layerIndex << std::endl;
+        for (int y = 0; y < ySize; y++) {
+            for (int x = 0; x < xSize; x++) {
+                ss << graphEdges[layerIndex][x][y].capacity << (x == xSize - 1 ? "" : " ");
+            }
+            ss << std::endl;
+        }
+    }
+    std::ofstream fout(heatmap_file);
+    fout << ss.str();
+    fout.close();
+}

@@ -57,7 +57,7 @@ class PatternRoute {
     // for net extraction
     void extractNet(std::vector<std::pair<Point, Point> >& extracted_nets, int x_bound, int y_bound);
 
-   private:
+//    private:
     const Parameters& parameters;
     const GridGraph& gridGraph;
     GRNet& net;
