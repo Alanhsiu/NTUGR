@@ -12,11 +12,16 @@ class SteinerTreeNode : public utils::PointT<int> {
    public:
     vector<std::shared_ptr<SteinerTreeNode>> children;
     utils::IntervalT<int> fixedLayers;
+    int z;  // Added by Alan: layer index
 
     SteinerTreeNode(utils::PointT<int> point)
         : utils::PointT<int>(point) {}
     SteinerTreeNode(utils::PointT<int> point, utils::IntervalT<int> _fixedLayers)
         : utils::PointT<int>(point), fixedLayers(_fixedLayers) {}
+    SteinerTreeNode(utils::PointT<int> point, int _z) // Added by Alan
+        : utils::PointT<int>(point), z(_z) {}
+    SteinerTreeNode(utils::PointT<int> point, utils::IntervalT<int> _fixedLayers, int _z) // Added by Alan
+        : utils::PointT<int>(point), fixedLayers(_fixedLayers), z(_z) {}
 
     static void preorder(std::shared_ptr<SteinerTreeNode> node, std::function<void(std::shared_ptr<SteinerTreeNode>)> visit);
     // static std::string getPythonString(std::shared_ptr<SteinerTreeNode> node);

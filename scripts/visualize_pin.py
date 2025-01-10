@@ -59,19 +59,24 @@ def plot_pins_heatmap(z_dict, z_filter=None, save_path=None):
 
 def main():
     # file_path = 'pin.txt' 
-    file_path = '/home/b09901066/ISPD-NTUEE/NTUGR/input/mempool_tile.net' 
+    base_dir = '/home/b09901066/ISPD-NTUEE/NTUGR/input'
+    output_dir = '/home/b09901066/ISPD-NTUEE/NTUGR/heatmaps/pins'
+    benchmark = 'mempool_tile'
+    file_path = os.path.join(base_dir, benchmark + '.net')
     z_dict = parse_net_data(file_path)
 
     num_pins = sum(len(pins) for pins in z_dict.values())
     print(f'Parsed {num_pins} pins')
     
-    dir = 'pins'
+    dir = os.path.join(output_dir, benchmark)
     os.makedirs(dir, exist_ok=True)
 
     # Plot and save heatmap at each z level from 0 to 9
     for z in tqdm(range(10), desc='Processing Z layers'):
         save_path = os.path.join(dir, f'pins_z_{z}.png')
         plot_pins_heatmap(z_dict, z_filter=z, save_path=save_path)
+        
+    print('Heatmaps saved to', dir)
 
 # Run the main function
 if __name__ == "__main__":

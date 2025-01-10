@@ -16,6 +16,7 @@ public:
     GridGraph gridGraph;
     vector<GRNet> nets;
     
+    void writeExtractNetToFile(vector<std::pair<Point, Point>>& extract_net, const string& filename) const;
     void separateNetIndices(vector<int>& netIndices, vector<vector<int>>& nonoverlapNetIndices) const;
     void sortNetIndices(vector<int>& netIndices) const;
     void printStatistics() const;

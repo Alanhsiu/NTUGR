@@ -10,7 +10,7 @@ echo "Running mempool_tile"
 # ./route -cap $input_path/mempool_group.cap -net $input_path/mempool_group.net -output $output_PR_path/mempool_group.PR_output > $output_log_path/mempool_group.log
 # echo "Running nvdla"
 # ./route -cap $input_path/nvdla.cap -net $input_path/nvdla.net -output $output_PR_path/nvdla.PR_output > $output_log_path/nvdla.log
-# echo "Running bsg_chip"
+# echo "Running bsg_chip"/home/b09901066/ISPD-NTUEE/NTUGR/benchmark/evaluation_script
 # ./route -cap $input_path/bsg_chip.cap -net $input_path/bsg_chip.net -output $output_PR_path/bsg_chip.PR_output > $output_log_path/bsg_chip.log
 # echo "Running ariane133_68"
 # ./route -cap $input_path/ariane133_68.cap -net $input_path/ariane133_68.net -output $output_PR_path/ariane133_68.PR_output > $output_log_path/ariane133_68.log

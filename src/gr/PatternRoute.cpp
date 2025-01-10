@@ -121,15 +121,15 @@ void PatternRoute::extractNet(std::vector<std::pair<Point, Point> >& extracted_n
         // Do whatever you want to do with the current node here
         for (const auto &child : node->children) {
             /*for testing*/
-            if((node->fixedLayers.high == 2147483647 && child->fixedLayers.low == 2147483647)||
-                (node->fixedLayers.high == 2147483647 && child->fixedLayers.low == -2147483648)||
-                (node->fixedLayers.high == -2147483648 && child->fixedLayers.low == 2147483647)||
-                (node->fixedLayers.high == -2147483648 && child->fixedLayers.low == -2147483648)
-            ){
-                cout << net.getName() << endl;
-            }
+            // if((node->fixedLayers.high == 2147483647 && child->fixedLayers.low == 2147483647)||
+            //     (node->fixedLayers.high == 2147483647 && child->fixedLayers.low == -2147483648)||
+            //     (node->fixedLayers.high == -2147483648 && child->fixedLayers.low == 2147483647)||
+            //     (node->fixedLayers.high == -2147483648 && child->fixedLayers.low == -2147483648)
+            // ){
+            //     cout << net.getName() << endl;
+            // }
             if(node->x <= x_bound && node->y <= y_bound &&
-                child->x <= x_bound && child->y <= y_bound
+                child->x <= x_bound && child->y <= y_bound // the 2-pin net completely falls in the region
             ){
                 // the layer is still undefined
                 // cout << "Node: " << node->x << " " << node->y << " " << node->fixedLayers.low << " " << node->fixedLayers.high << '\n';
@@ -154,15 +154,23 @@ void PatternRoute::constructPaths(std::shared_ptr<PatternRoutingNode>& start, st
     if (start->x == end->x || start->y == end->y) {
         childPaths.push_back(end);
     } else {
-        for (int pathIndex = 0; pathIndex <= 1; pathIndex++) {  // two paths of different L-shape
-            utils::PointT<int> midPoint = pathIndex ? utils::PointT<int>(start->x, end->y) : utils::PointT<int>(end->x, start->y);
-            std::shared_ptr<PatternRoutingNode> mid = std::make_shared<PatternRoutingNode>(midPoint, numDagNodes++, true);
-            mid->paths = {{end}};
-            childPaths.push_back(mid);
-        }
+        // for (int pathIndex = 0; pathIndex <= 1; pathIndex++) {  // two paths of different L-shape
+        //     utils::PointT<int> midPoint = pathIndex ? utils::PointT<int>(start->x, end->y) : utils::PointT<int>(end->x, start->y);
+        //     std::shared_ptr<PatternRoutingNode> mid = std::make_shared<PatternRoutingNode>(midPoint, numDagNodes++, true);
+        //     mid->paths = {{end}};
+        //     childPaths.push_back(mid);
+        // }
 
-        // Adding Z-shape paths
-        bool isZShape = false;
+        // Add only one L-shape path (Alan 0530)
+        srand(3);
+        int pathIndex = rand() % 2;
+        utils::PointT<int> midPoint = pathIndex ? utils::PointT<int>(start->x, end->y) : utils::PointT<int>(end->x, start->y);
+        std::shared_ptr<PatternRoutingNode> mid = std::make_shared<PatternRoutingNode>(midPoint, numDagNodes++, true);
+        mid->paths = {{end}};
+        childPaths.push_back(mid);
+
+        // Add Z-shape paths
+        bool isZShape = true;
         // if(start->x == 0 || start->x == gridGraph.getSize(0) - 1 || end->x == 0 || end->x == gridGraph.getSize(0) - 1) {
         //     isZShape = true;
         // }

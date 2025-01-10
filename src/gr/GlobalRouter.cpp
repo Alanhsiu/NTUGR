@@ -106,6 +106,12 @@ void GlobalRouter::route() {
         std::shared_ptr<GRTreeNode> tree = nets[netIndex].getRoutingTree();
         gridGraph.commitTree(tree);
     }
+
+    // save the extracted_net 2-pin nets to a file
+    char buffer[50];
+    std::sprintf(buffer, "two_pin_net_%d_%d.txt", x_bound, y_bound);
+    writeExtractNetToFile(extracted_nets, string(buffer));
+
     std::cout << "non-parallel 1 for time elapsed: " << std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - temp).count() << std::endl;
     temp = std::chrono::high_resolution_clock::now();
 
@@ -238,6 +244,23 @@ void GlobalRouter::route() {
 
     gridGraph.writeCapacity(parameters.capacity_file);
 }
+
+void GlobalRouter::writeExtractNetToFile(vector<std::pair<Point, Point>>& extract_net, const string& filename) const {
+    std::ofstream outFile(filename);
+
+    if (!outFile) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
+    }
+
+    for (auto& pair : extract_net) {
+        outFile << pair.first.x << " " << pair.first.y << " "
+                << pair.second.x << " " << pair.second.y << std::endl;
+    }
+
+    outFile.close();
+}
+
 
 void GlobalRouter::write_partial_cap(vector<vector<vector<double>>>& cap) const {
     std::stringstream ss;
